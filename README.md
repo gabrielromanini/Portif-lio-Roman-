@@ -1,36 +1,44 @@
-# Site Psicóloga Yole Lopes
+# Site Gabriel Romanini
 
-Landing page institucional de página única para a psicóloga Yole Lopes (CRP 08/34622), com foco em captação de pacientes para atendimento online.
+Landing page pessoal (portfólio) de Gabriel Romanini, Software Quality Engineer: trajetória, pilares da qualidade de software e o método de trabalho, numa página única.
 
-Site ao vivo: [psicologayole.com.br](https://psicologayole.com.br)
+Visual preto e prata, inspirado em Mercedes-AMG / F1, com um único acento verde-petróleo (#00A19C).
+
+Ainda não publicado: o projeto roda só localmente (ver [Pendências](docs/historico.md#pendências)).
 
 ---
 
 ## Tecnologias
 
-- **React 19 + TypeScript** — interface
-- **Tailwind CSS** — estilização
-- **TanStack Start** (Vite) — bundler e roteamento
-- **shadcn/ui** (Radix UI) — componentes de interface
-- **Netlify** — hospedagem com deploy automático
-- **GitHub** — controle de versão
+- **React 19 + TypeScript**: interface
+- **Tailwind CSS 4**: estilização
+- **TanStack Start** (Vite): bundler, roteamento e pré-renderização (SSR)
+- **Radix UI**: o modal dos pilares
+- **lucide-react**: ícones
+- **sharp** (já vem nas dependências): usado para converter e redimensionar imagens
+
+O projeto começou como cópia do site da psicóloga Yole Lopes. Tudo o que era dela (páginas, componentes, imagens, analytics) foi removido em 05/10/2026.
 
 ---
 
 ## Estrutura do projeto
 
 ```
-codigo-fonte/
+site-gabriel/
 ├── src/
 │   ├── routes/
-│   │   ├── index.tsx        ← todo o conteúdo da página (textos, FAQ, SEO)
-│   │   └── __root.tsx       ← <head> global, tags de analytics
-│   ├── assets/              ← fotos e logos usados no site (yole-1 topo, yole-2 sobre, yole-3 horários)
-│   └── styles.css           ← cores, fontes e tokens de design
-├── public/                  ← favicon, imagem de compartilhamento (og:image) e folhas/
-├── imagens-nao-usadas/      ← fotos antigas, logos alternativos e originais em PNG (não vão para o site)
-├── docs/                    ← efeitos-visuais.md (como funciona) e historico.md (decisões e pendências)
-└── site.pronto.2/           ← build anterior (não editar)
+│   │   ├── index.tsx        ← a landing page: topo, Sobre, Expertise, Trajetória, Ferramentas, Contato
+│   │   └── __root.tsx       ← <head> global (sem analytics)
+│   ├── components/portfolio/
+│   │   ├── Layout.tsx       ← menu, rodapé, Eyebrow, fontes e o alinhamento da luz dos títulos
+│   │   ├── Pilares.tsx      ← os 7 pilares e o modal de cada um
+│   │   ├── Metodo.tsx       ← seção "Como a qualidade é construída" (9 partes)
+│   │   └── Fundos.tsx       ← fundos decorativos das seções
+│   ├── lib/site.ts          ← nome e link do LinkedIn
+│   ├── assets/              ← foto, logo e fundo do topo
+│   └── styles.css           ← cores, fontes e todos os efeitos (cromado, aço escovado, luz…)
+├── public/                  ← favicon (ainda o da Yole)
+└── docs/                    ← efeitos-visuais.md (como funciona) e historico.md (decisões e pendências)
 ```
 
 ---
@@ -39,14 +47,17 @@ codigo-fonte/
 
 | O quê | Arquivo |
 |---|---|
-| Textos, FAQ, especialidades, depoimentos | `src/routes/index.tsx` |
-| Tags de analytics, scripts do `<head>` | `src/routes/__root.tsx` |
-| Cores e fontes | `src/styles.css` |
-| Fotos e logos | `src/assets/` |
-| Favicon e imagem de compartilhamento | `public/` |
-| Folhas ao vento e transições entre seções | `src/components/decorative/WindLeaves.tsx` — ver [docs/efeitos-visuais.md](docs/efeitos-visuais.md) |
+| Texto do topo, Sobre, Expertise, Trajetória, Ferramentas, Formação, Contato | `src/routes/index.tsx` |
+| Os 7 pilares (texto do card, tópicos e ferramentas do modal) | `src/components/portfolio/Pilares.tsx`, constante `PILARES` |
+| Seção Método (Shift Left, pirâmide, heurísticas, quality gates…) | `src/components/portfolio/Metodo.tsx` |
+| Itens do menu | `src/components/portfolio/Layout.tsx`, constante `NAV` |
+| Nome e link do LinkedIn | `src/lib/site.ts` |
+| Cores, gradientes e efeitos | `src/styles.css` (ver [docs/efeitos-visuais.md](docs/efeitos-visuais.md)) |
+| Foto do topo | `src/assets/gabriel-hero.jpeg` (pode substituir mantendo o nome) |
+| Logo do menu | `src/assets/logo-gr.png` |
+| Fundo de traçados do topo | `src/assets/bg-hero-3840.webp`, gerado a partir de `src/assets/BG.png` |
 
-O número de WhatsApp, e-mail e URLs de redes sociais ficam no topo de `src/routes/index.tsx`, nas constantes `WHATSAPP_URL`, `SITE_URL` e `INSTAGRAM_URL`.
+**Textos do site:** sem primeira pessoa. Use "estruturando", "desenvolvendo", "Atuação com foco em…", nunca "eu estruturo".
 
 ---
 
@@ -59,37 +70,24 @@ npm install
 npm run dev
 ```
 
-O site abre em `http://localhost:8080` (páginas: `/` e `/ansiedade`). Se essa porta estiver ocupada, o terminal mostra a próxima livre (ex.: 8081).
+O site abre em `http://localhost:8080`. Se a porta estiver ocupada, o terminal mostra a próxima livre (ex.: 8081).
 
----
-
-## Como publicar alterações
-
-O deploy é automático via Netlify. Basta fazer push para a branch `main`:
+Para conferir a versão final (mais rápida, igual à publicada):
 
 ```bash
-git add .
-git commit -m "descreva o que mudou"
-git push
+npm run build
+npx vite preview
 ```
 
-O Netlify detecta o push, roda `npm run build` automaticamente e publica em ~1-2 minutos.
-
 ---
 
-## Medição e anúncios
+## Trocar o fundo de traçados do topo
 
-O Google Tag Manager está instalado com o container **GTM-PFLC3XNT**:
+1. Salve a imagem nova por cima de `src/assets/BG.png`, de preferência com **fundo preto** (não transparente) e em **3840×2160**.
+2. Gere a versão leve que o site usa:
 
-- Script no `<head>` em `src/routes/__root.tsx`
-- Noscript no `<body>` em `src/routes/__root.tsx`
+```bash
+node -e "require('sharp')('src/assets/BG.png').resize(3840).webp({quality:85}).toFile('src/assets/bg-hero-3840.webp')"
+```
 
-Para adicionar tags (Google Analytics, Google Ads, Meta Pixel, etc.), configure dentro do painel do GTM — não é necessário alterar o código.
-
----
-
-## Repositório e hospedagem
-
-- **GitHub:** github.com/gabrielromanini/-site-yole
-- **Netlify:** app.netlify.com — projeto `zippy-granita-24e05c`
-- **Deploy automático:** commits na branch `main` publicam automaticamente
+O preto some sozinho no site (`mix-blend-mode: screen`), então não precisa remover o fundo.

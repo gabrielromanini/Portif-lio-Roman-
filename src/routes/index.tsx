@@ -1,812 +1,381 @@
 import { createFileRoute } from "@tanstack/react-router";
-import heroImg from "@/assets/yole-1.jpg";
-import sobreImg from "@/assets/yole-2.jpg";
-import bemEstarImg from "@/assets/yole-3.jpg";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { InstagramIcon } from "@/components/icons/InstagramIcon";
-import { WindLeaves, RHYTHM_B, RHYTHM_C, RHYTHM_D } from "@/components/decorative/WindLeaves";
-import { CardLeaves } from "@/components/decorative/CardLeaves";
-import { ButtonLeaves } from "@/components/decorative/ButtonLeaves";
-import { CTAButton } from "@/components/site/CTAButton";
-import { SectionHeader } from "@/components/site/SectionHeader";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
-import { BreatheInvite } from "@/components/site/BreatheInvite";
-import { INSTAGRAM_LABEL, INSTAGRAM_URL, SITE_URL, UNDER_HEADER } from "@/lib/site";
+import heroImg from "@/assets/gabriel-hero.jpeg";
+import bgHero3840 from "@/assets/bg-hero-3840.webp";
 import {
-  HeroBlobs,
-  useHeroParallax,
-  parallaxStyle,
-  PARALLAX_PHOTO_PX,
-} from "@/components/decorative/HeroGlow";
-import {
-  ShieldCheck,
-  Clock,
-  Video,
-  Brain,
-  HeartPulse,
-  Utensils,
-  Sparkles,
-  Activity,
-  CloudRain,
-  Users,
-  Flame,
-  Hourglass,
-  Ghost,
-  Waves,
-  Compass,
-  ChevronDown,
-  Star,
-  Leaf,
   ArrowRight,
+  ArrowUpRight,
+  Bot,
+  GaugeCircle,
+  GitBranch,
+  GraduationCap,
+  Linkedin,
+  MapPin,
+  ShieldCheck,
+  Workflow,
 } from "lucide-react";
-import { Fragment, useRef, useState } from "react";
+import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
+import { Eyebrow, FONTS_LINKS, PageShell } from "@/components/portfolio/Layout";
+import { MetodoSections } from "@/components/portfolio/Metodo";
+import { PilaresSection } from "@/components/portfolio/Pilares";
+import {
+  DiagonaisEspelhadas,
+  FibraCarbono,
+  GradeTelemetria,
+  LinhaPista,
+} from "@/components/portfolio/Fundos";
 
-const HERO_IMAGE_URL = `${SITE_URL}/og-yole.jpg`;
+// Fundo de traçados da primeira dobra: só o lado esquerdo aparece (some antes
+// da foto), apaga embaixo e abre um "buraco" suave atrás do texto.
+const HERO_BG_MASK = {
+  maskImage:
+    "radial-gradient(ellipse 30% 42% at 27% 52%, transparent 55%, black 100%), linear-gradient(to bottom, black 75%, transparent), linear-gradient(to right, black 35%, transparent 55%)",
+  maskComposite: "intersect",
+} as const;
 
-const FAQS = [
+const EXPERTISE = [
   {
-    q: "Como funciona a terapia online com a psicóloga Yole Lopes?",
-    a: "Os atendimentos acontecem 100% online, por videochamada. Trabalho com Terapia Cognitivo-Comportamental (TCC) e Terapia do Esquema, em um espaço seguro de escuta e acolhimento. Cada processo é construído junto com você, respeitando seu tempo e sua história.",
+    icon: ShieldCheck,
+    title: "Quality Engineering",
+    text: "Estruturação de áreas de QA do zero: processos, governança, estratégia, roadmap e cultura de qualidade com Shift Left e Quality Champions.",
   },
   {
-    q: "Como faço para agendar uma consulta?",
-    a: "O agendamento é feito pelo WhatsApp. Você me chama, conversamos sobre o que está buscando e eu envio as opções de horários disponíveis para você escolher.",
+    icon: Bot,
+    title: "IA aplicada a testes",
+    text: "Evolução de frameworks internos com GenAI, LLM e MCP para gerar cenários, planos de teste e validações automatizadas com agentes inteligentes.",
   },
   {
-    q: "O atendimento é 100% online?",
-    a: "Sim. Atendo exclusivamente online, por videochamada, o que dá mais praticidade, conforto e segurança para encaixar a terapia na sua rotina, de onde você estiver.",
+    icon: Workflow,
+    title: "Automação E2E",
+    text: "Automações com Cypress e Playwright, testes de API com Postman e Cypress, e testes de carga com K6.",
   },
   {
-    q: "A terapia online é sigilosa?",
-    a: "Sim. O sigilo é um princípio ético da psicologia e é totalmente preservado também no atendimento online. Tudo o que você compartilha nas sessões é confidencial.",
-  },
-  {
-    q: "Para quem a terapia é indicada?",
-    a: "Atendo adolescentes a partir de 14 anos, adultos e idosos que buscam apoio psicológico, autoconhecimento ou um espaço seguro para falar sobre o que estão sentindo.",
-  },
-  {
-    q: "Quais temas podem ser trabalhados na terapia?",
-    a: "Trabalho temas como ansiedade, autoestima, autoimagem, burnout, procrastinação, traumas, fobias, conflitos familiares e conjugais, relação com a alimentação e o corpo, autoconhecimento e desenvolvimento pessoal.",
-  },
-  {
-    q: "Quanto tempo dura uma sessão?",
-    a: "As sessões têm duração média de 50 minutos e podem acontecer em frequência semanal ou quinzenal, conforme a necessidade do seu processo terapêutico.",
-  },
-  {
-    q: "Como funciona o primeiro atendimento?",
-    a: "O primeiro contato é uma conversa gratuita de cerca de 20 minutos. É um momento sem compromisso, para você conhecer meu trabalho e eu entender um pouco do seu momento atual.",
-  },
-  {
-    q: "Posso tirar dúvidas pelo WhatsApp antes de agendar?",
-    a: "Sim, claro. Você pode me chamar no WhatsApp para tirar qualquer dúvida sobre o atendimento antes de marcar a sua sessão.",
-  },
-  {
-    q: "Você atende plano de saúde?",
-    a: "Não. Meu atendimento é particular. Caso precise, posso emitir recibo para reembolso junto ao seu plano de saúde, conforme as regras da sua operadora.",
+    icon: GitBranch,
+    title: "CI/CD & Observabilidade",
+    text: "Testes integrados ao pipeline via Argo Workflows, com Allure Reports e Cypress Cloud para rastreabilidade e métricas de qualidade.",
   },
 ];
 
-const personLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Yole Lopes Cortinhas",
-  jobTitle: "Psicóloga",
-  identifier: "CRP 08/34622",
-  url: SITE_URL,
-  image: HERO_IMAGE_URL,
-  telephone: "+5541988964592",
-  email: "yolepsico@gmail.com",
-  sameAs: [INSTAGRAM_URL],
-  knowsAbout: [
-    "Psicologia",
-    "Terapia Cognitivo-Comportamental",
-    "Terapia do Esquema",
-    "Atendimento psicológico online",
-  ],
-  areaServed: { "@type": "Country", name: "Brasil" },
-  makesOffer: {
-    "@type": "Offer",
-    itemOffered: {
-      "@type": "Service",
-      name: "Atendimento psicológico online",
-      serviceType: "Psicoterapia online",
-      provider: { "@type": "Person", name: "Yole Lopes Cortinhas" },
-      areaServed: "BR",
-      availableChannel: {
-        "@type": "ServiceChannel",
-        serviceUrl: SITE_URL,
-        availableLanguage: "Portuguese",
-      },
-    },
+const EXPERIENCE = [
+  {
+    company: "Frota162",
+    roles: [{ title: "Consultor de Qualidade de Software", period: "Jun 2025 — atual" }],
+    points: [
+      "Estruturação da área de QA com processos, governança e cultura de qualidade para 5 squads simultâneas.",
+      "Referência de qualidade para cerca de 23 desenvolvedores, promovendo Shift Left Testing e Quality Champions.",
+      "Evolução de framework interno baseado em GenAI/LLM/MCP para geração de cenários, planos de teste e validações.",
+      "Automações E2E com Cypress e Playwright integradas ao CI/CD via Argo Workflows.",
+      "Allure Reports e Cypress Cloud para rastreabilidade e acompanhamento de churn rate das squads.",
+    ],
   },
-};
+  {
+    company: "Autoforce",
+    roles: [
+      { title: "QA Lead", period: "Dez 2023 — Set 2025" },
+      { title: "QA Sênior", period: "Jun 2022 — Dez 2023" },
+    ],
+    points: [
+      "Gestão e desenvolvimento do time de Qualidade de Software, com 5 QAs.",
+      "Definição da estratégia, aplicação de Shift Left Testing e roadmap da área de QA.",
+      "Testes E2E com Cypress, testes de API com Postman e Cypress, e testes de carga com K6.",
+      "Análise de impacto, documentação técnica, relatórios de qualidade e apoio ao roadmap de produto.",
+    ],
+  },
+  {
+    company: "SóCarrão",
+    roles: [{ title: "QA Analyst", period: "Jun 2021 — Jun 2022" }],
+    points: [
+      "Planejamento e levantamento de requisitos de testes.",
+      "Automação com Cypress e testes de API com Postman.",
+      "Testes de regressão, smoke, usabilidade e carga.",
+    ],
+  },
+  {
+    company: "Roit Bank",
+    roles: [{ title: "QA Analyst", period: "Nov 2020 — Abr 2021" }],
+    points: [
+      "Testes funcionais, mobile e de API com Postman.",
+      "Testes automatizados com Cypress.",
+    ],
+  },
+  {
+    company: "Mirum Brasil",
+    roles: [{ title: "QA Analyst", period: "Jun 2018 — Nov 2020" }],
+    points: [
+      "Testes funcionais: regressão, exploratórios e smoke.",
+      "Automação com Ruby e Cucumber, e testes de API com Postman.",
+    ],
+  },
+];
 
-const webPageLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  name: "Psicóloga Online | Yole Lopes — Terapia Online",
-  url: SITE_URL,
-  inLanguage: "pt-BR",
-  about: { "@type": "Person", name: "Yole Lopes Cortinhas" },
-  description:
-    "Atendimento psicológico online com a psicóloga Yole Lopes (CRP 08/34622). Terapia online com TCC e Terapia do Esquema.",
-};
-
-const faqLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQS.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
-  })),
-};
+const STACK = [
+  "Cypress",
+  "Playwright",
+  "Postman",
+  "K6",
+  "Ruby + Cucumber",
+  "Argo Workflows",
+  "Allure Reports",
+  "Cypress Cloud",
+  "GenAI / LLM",
+  "MCP",
+  "Shift Left Testing",
+  "Testes de API",
+  "Testes mobile",
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Psicóloga Online | Yole Lopes — Terapia Online com Acolhimento" },
+      { title: `${SITE_NAME} | Quality Engineering & QA Lead` },
       {
         name: "description",
         content:
-          "Atendimento psicológico online com a psicóloga Yole Lopes (CRP 08/34622). Terapia online com TCC e Terapia do Esquema. Agende sua conversa gratuita pelo WhatsApp.",
+          "Gabriel Romanini: mais de 8 anos em Qualidade de Software, Quality Engineering, automação E2E com Cypress e Playwright, e IA aplicada à engenharia de testes.",
       },
-      { property: "og:title", content: "Psicóloga Online | Yole Lopes — Terapia Online" },
+      { property: "og:title", content: `${SITE_NAME} | Quality Engineering & QA Lead` },
       {
         property: "og:description",
-        content:
-          "Atendimento psicológico online com acolhimento, escuta e segurança. Agende sua conversa gratuita pelo WhatsApp.",
+        content: "Quality Engineering, automação E2E e IA aplicada à engenharia de testes.",
       },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "pt_BR" },
-      { property: "og:url", content: SITE_URL },
-      { property: "og:image", content: HERO_IMAGE_URL },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Psicóloga Online | Yole Lopes — Terapia Online" },
-      {
-        name: "twitter:description",
-        content:
-          "Atendimento psicológico online com a psicóloga Yole Lopes (CRP 08/34622). Agende sua conversa gratuita pelo WhatsApp.",
-      },
-      { name: "twitter:image", content: HERO_IMAGE_URL },
     ],
-    links: [
-      { rel: "canonical", href: SITE_URL },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
-      },
-    ],
-    scripts: [
-      { type: "application/ld+json", children: JSON.stringify(personLd) },
-      { type: "application/ld+json", children: JSON.stringify(webPageLd) },
-      { type: "application/ld+json", children: JSON.stringify(faqLd) },
-    ],
+    links: FONTS_LINKS,
   }),
   component: Index,
 });
 
 function Index() {
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
-      <Header />
-      <main>
-        <Hero />
-        <BreatheInvite />
-        <Dores />
-        <Especialidades />
-        <ComoFunciona />
-        <Sobre />
-        <ProvaSocial />
-        <Horarios />
-        <FAQ />
-        <CTAFinal />
-      </main>
-      <Footer />
-      <FloatingWhatsApp />
-    </div>
-  );
-}
-
-const HERO_TITLE = "Entender seus pensamentos é o primeiro passo para transformar sua vida.";
-const HERO_IN_START_MS = 120; // primeira palavra (o selo entra em 0)
-const HERO_IN_WORD_STEP_MS = 55; // intervalo entre palavras
-
-function Hero() {
-  const badges = [
-    { icon: Video, label: "100% online" },
-    { icon: Clock, label: "Seg. a sex., 10h às 20h" },
-    { icon: ShieldCheck, label: "CRP 08/34622" },
-    { icon: Brain, label: "TCC + Terapia do Esquema" },
-  ];
-  const sectionRef = useRef<HTMLElement>(null);
-  useHeroParallax(sectionRef);
-  const titleWords = HERO_TITLE.split(" ");
-  // Sequência da entrada (~1,5s): selo, palavras do título, depois o resto.
-  const afterTitle = HERO_IN_START_MS + titleWords.length * HERO_IN_WORD_STEP_MS;
-  const inAt = (ms: number) => ({ animationDelay: `${ms}ms` });
-  const heroIn = "animate-hero-in motion-reduce:animate-none";
-
-  return (
-    <section
-      ref={sectionRef}
-      id="inicio"
-      className={`relative overflow-hidden ${UNDER_HEADER}`}
-      style={{
-        backgroundImage:
-          // Desbota ao longo de ~360px (com paradas intermediárias para a curva
-          // ficar macia): o card "Sentindo ansiedade agora?" fica em cima desta
-          // passagem e, com 140px, a divisa aparecia como uma linha.
-          "linear-gradient(to bottom, var(--color-accent) 0, var(--color-accent) calc(100% - 360px), color-mix(in oklab, var(--color-accent) 70%, transparent) calc(100% - 240px), color-mix(in oklab, var(--color-accent) 35%, transparent) calc(100% - 120px), transparent 100%)",
-      }}
-    >
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-2 md:items-center md:gap-12 md:px-6 md:py-20 lg:py-24">
-        <div>
-          {/* Glow fixo como base; a animação só faz ele "respirar" por cima.
-              Com prefers-reduced-motion fica só o glow fixo. */}
-          <span style={inAt(0)} className={`${heroIn} group/cta relative inline-flex items-center overflow-hidden rounded-full max-md:pointer-events-none border border-[#D3DACA] bg-[#E3E8D8]/85 px-4 py-1.5 text-sm font-semibold text-[#2E2F2A] shadow-[0_0_20px_rgba(160,185,140,0.45)] animate-badge-glow transition-[translate] duration-500 ease-out hover:-translate-y-0.5 motion-reduce:animate-none motion-reduce:hover:translate-y-0 md:text-base`}>
-            <ButtonLeaves />
-            <span className="relative inline-flex items-center gap-2">
-              <Sparkles className="h-4 w-4 animate-sparkle-breathe motion-reduce:animate-none md:h-5 md:w-5" />
-              Conversa inicial gratuita
-            </span>
-          </span>
-          <h1 className="mt-5 text-[31px] leading-[1.25] text-foreground md:text-5xl md:leading-[1.15]">
-            {titleWords.map((word, i) => (
-              <Fragment key={i}>
-                <span
-                  className={`${heroIn} inline-block`}
-                  style={inAt(HERO_IN_START_MS + i * HERO_IN_WORD_STEP_MS)}
-                >
-                  {word}
-                </span>{" "}
-              </Fragment>
-            ))}
-          </h1>
-          <p style={inAt(afterTitle)} className={`${heroIn} mt-5 text-sm leading-relaxed text-foreground/70 md:text-xl`}>
-          Um espaço para acolher suas emoções e construir novas formas de viver.
-          </p>
-          <p style={inAt(afterTitle + 100)} className={`${heroIn} mt-3 text-sm leading-relaxed text-foreground/60 md:text-xl`}>
-          Terapia Cognitivo-Comportamental.
-          </p>
-
-          <div style={inAt(afterTitle + 200)} className={`${heroIn} mt-7 flex flex-col gap-3 sm:flex-row`}>
-            <CTAButton variant="whatsapp" className="hero-cta" ariaLabel="Falar agora com a psicóloga pelo WhatsApp">
-              <WhatsAppIcon />
-              Quero começar minha terapia agora
-            </CTAButton>
+    <PageShell>
+      {/* HERO: traçados cromados de fundo, ocupando a largura toda da tela */}
+      <div className="relative">
+        <img
+          src={bgHero3840}
+          alt=""
+          aria-hidden
+          width={3840}
+          height={2160}
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[46%] w-full select-none object-cover opacity-25 mix-blend-screen md:top-0 md:h-full"
+          style={HERO_BG_MASK}
+        />
+        {/* HERO */}
+        <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-24 pt-20 sm:px-6 md:grid-cols-[1.4fr_1fr] md:pt-28">
+          <div className="animate-fade-up">
+            <Eyebrow>Software Quality Engineer</Eyebrow>
+            <h1 className="mt-8 whitespace-nowrap leading-[0.9] tracking-[-0.02em]">
+              <span className="block text-[clamp(48px,6vw,84px)] font-normal text-[#d4d4d4]">
+                Gabriel
+              </span>
+              <span className="text-chrome-reflexo block w-fit pl-[0.3em] pr-[0.1em] text-[clamp(72px,9vw,128px)] font-medium italic">
+                Romanini
+              </span>
+              {/* Linha de acento, alinhada ao deslocamento do "Romanini" (mesmo font-size, mesmo 0.3em) */}
+              <span
+                aria-hidden
+                className="mt-6 ml-[0.3em] block h-[2px] w-[180px] bg-gradient-to-r from-teal to-transparent text-[clamp(72px,9vw,128px)]"
+              />
+            </h1>
+            <p className="mt-8 max-w-xl text-lg font-light leading-relaxed text-muted-foreground">
+              Mais de 8 anos construindo qualidade de software em ambientes ágeis de alta escala:
+              estruturando áreas de QA do zero, desenvolvendo software com ênfase em qualidade,
+              liderando equipes de engenheiros de qualidade e aplicando Inteligência Artificial à
+              engenharia de testes.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <a
+                href="#trajetoria"
+                className="btn-steel-dark inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-medium"
+              >
+                Ver trajetória <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-steel-dark inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm"
+              >
+                <Linkedin className="h-4 w-4" /> LinkedIn
+              </a>
+            </div>
+            <p className="mt-10 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5" /> Curitiba · PR · Brasil
+            </p>
           </div>
 
-          <ul style={inAt(afterTitle + 320)} className={`${heroIn} mt-8 flex flex-wrap gap-x-5 gap-y-2`}>
-            {badges.map((b) => (
-              <li
-                key={b.label}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/70 max-md:text-foreground/85 md:text-sm"
+          {/* Foto com moldura cromada */}
+          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm animate-fade-up [animation-delay:150ms]">
+            <div className="frame-chrome absolute inset-0 rounded-[2rem]" />
+            <div className="absolute inset-[1px] overflow-hidden rounded-[calc(2rem-1px)] bg-background">
+              <img
+                src={heroImg}
+                alt="Gabriel Romanini"
+                width={1024}
+                height={1536}
+                fetchPriority="high"
+                className="h-full w-full object-cover object-[50%_15%]"
+              />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/60 to-transparent" />
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="relative">
+        <DiagonaisEspelhadas />
+        <PilaresSection />
+      </div>
+
+      {/* SOBRE */}
+      <section id="sobre" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-28 sm:px-6">
+        <div className="grid gap-12 md:grid-cols-[1fr_1.6fr]">
+          <div>
+            <Eyebrow>Sobre</Eyebrow>
+            <h2 className="luz-passando mt-6 w-fit text-4xl leading-tight sm:text-5xl">
+              Qualidade como <em className="text-chrome">estratégia</em>, não como etapa.
+            </h2>
+          </div>
+          <div className="space-y-6 text-base font-light leading-relaxed text-muted-foreground sm:text-lg">
+            <p>
+              Atuação com foco em Quality Engineering, automação E2E e cultura de qualidade, com
+              experiência estruturando áreas de QA do zero: definindo processos, governança e
+              liderança técnica para várias squads ao mesmo tempo.
+            </p>
+            <p>
+              Foco atual em integrar Inteligência Artificial (GenAI, LLM e MCP) à engenharia de
+              testes: evolução de frameworks internos, automação de análises e geração de cenários e
+              planos de teste com agentes inteligentes.
+            </p>
+            <p>
+              Perfil hands-on e estratégico, combinando liderança técnica, automação com Cypress e
+              Playwright, integração com CI/CD, testes manuais e disseminação da cultura de
+              qualidade nos times.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="relative">
+        <FibraCarbono />
+        {/* EXPERTISE */}
+        <section id="expertise" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 sm:px-6">
+          <Eyebrow>Expertise</Eyebrow>
+          <h2 className="luz-passando mt-6 w-fit text-4xl sm:text-5xl">O que é entregue</h2>
+          <div className="mt-14 grid gap-5 sm:grid-cols-2">
+            {EXPERTISE.map(({ icon: Icon, title, text }) => (
+              <article
+                key={title}
+                className="card-chrome group relative overflow-hidden rounded-2xl p-8"
               >
-                <b.icon className="h-3.5 w-3.5 text-foreground/60 max-md:text-foreground/80 md:h-4 md:w-4" />
-                {b.label}
+                <div className="sheen-hover absolute inset-0" />
+                <Icon className="h-7 w-7 text-silver" strokeWidth={1.25} />
+                <h3 className="mt-6 text-xl font-medium text-foreground">{title}</h3>
+                <p className="mt-3 font-light leading-relaxed text-muted-foreground">{text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <div className="relative">
+        <GradeTelemetria />
+        <MetodoSections />
+      </div>
+
+      <div className="relative pt-16">
+        <LinhaPista />
+        {/* TRAJETÓRIA */}
+        <section id="trajetoria" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 sm:px-6">
+          <Eyebrow>Trajetória</Eyebrow>
+          <h2 className="luz-passando mt-6 w-fit text-4xl sm:text-5xl">Experiência</h2>
+          <ol className="relative mt-14 space-y-14 border-l border-white/10 pl-8 sm:pl-12">
+            {EXPERIENCE.map((job) => (
+              <li key={job.company} className="relative">
+                <span className="absolute -left-[37px] top-2 h-2.5 w-2.5 rounded-full bg-silver shadow-[0_0_12px_oklch(0.85_0.01_250/0.8)] sm:-left-[53px]" />
+                <h3 className="font-serif text-3xl text-chrome">{job.company}</h3>
+                <div className="mt-2 space-y-1">
+                  {job.roles.map((r) => (
+                    <p
+                      key={r.title}
+                      className="flex flex-wrap items-baseline gap-x-3 text-sm uppercase tracking-[0.15em]"
+                    >
+                      <span className="text-foreground">{r.title}</span>
+                      <span className="text-muted-foreground">{r.period}</span>
+                    </p>
+                  ))}
+                </div>
+                <ul className="mt-5 max-w-3xl space-y-2.5 font-light leading-relaxed text-muted-foreground">
+                  {job.points.map((p) => (
+                    <li key={p} className="flex gap-3">
+                      <span className="mt-[0.7em] h-px w-3 shrink-0 bg-silver/60" />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+
+      {/* STACK + FORMAÇÃO */}
+      <section className="mx-auto grid max-w-6xl gap-5 px-4 pb-28 sm:px-6 md:grid-cols-[1.6fr_1fr]">
+        <div className="card-chrome rounded-2xl p-8">
+          <div className="flex items-center gap-3">
+            <GaugeCircle className="h-5 w-5 text-silver" strokeWidth={1.25} />
+            <h3 className="text-sm uppercase tracking-[0.25em] text-foreground">Ferramentas</h3>
+          </div>
+          <ul className="mt-6 flex flex-wrap gap-2.5">
+            {STACK.map((s) => (
+              <li
+                key={s}
+                className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-sm text-muted-foreground"
+              >
+                {s}
               </li>
             ))}
           </ul>
         </div>
+        <div className="card-chrome rounded-2xl p-8">
+          <div className="flex items-center gap-3">
+            <GraduationCap className="h-5 w-5 text-silver" strokeWidth={1.25} />
+            <h3 className="text-sm uppercase tracking-[0.25em] text-foreground">Formação</h3>
+          </div>
+          <p className="mt-6 font-serif text-2xl text-foreground">
+            Análise e Desenvolvimento de Sistemas
+          </p>
+          <p className="mt-2 text-sm uppercase tracking-[0.15em] text-muted-foreground">
+            UniCesumar · 2017 — 2020
+          </p>
+        </div>
+      </section>
 
-        {/* Sem animação de entrada na foto: ela é o maior elemento da tela e
-            precisa aparecer o quanto antes (fetchpriority alta, sem lazy). */}
-        <div className="relative">
-          <HeroBlobs />
+      {/* CONTATO */}
+      <section id="contato" className="scroll-mt-20 px-4 pb-28 sm:px-6">
+        <div className="card-chrome relative isolate mx-auto max-w-4xl overflow-hidden rounded-[2rem] px-6 py-16 text-center sm:px-16">
+          {/* Glow radial suave atrás do título, fechando a página */}
           <div
-            className="relative mx-auto overflow-hidden rounded-3xl border border-border/60 shadow-soft md:max-w-sm lg:max-w-sm"
-            style={parallaxStyle(PARALLAX_PHOTO_PX)}
-          >
-            <img
-              src={heroImg}
-              alt="Yole Lopes, psicóloga online (CRP 08/34622), em ambiente acolhedor de atendimento"
-              width={1085}
-              height={1449}
-              loading="eager"
-              fetchPriority="high"
-              className="aspect-[4/5] w-full object-cover object-top"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Disposição das folhas de cada card (2 de cada). Nessa ordem, cards vizinhos
-// nunca repetem, nem lado a lado nem um embaixo do outro na grade de 3 colunas.
-const DORES_LEAF_LAYOUTS = [0, 1, 2, 1, 2, 0];
-
-function Dores() {
-  const dores: { icon: typeof Activity; title: string; href?: string }[] = [
-    { icon: Activity, title: "Ansiedade e preocupações constantes", href: "/ansiedade" },
-    { icon: HeartPulse, title: "Baixa autoestima e dificuldade com autoimagem" },
-    { icon: Hourglass, title: "Procrastinação e sensação de bloqueio" },
-    { icon: Flame, title: "Burnout e esgotamento emocional" },
-    { icon: Users, title: "Conflitos familiares ou conjugais" },
-    { icon: Utensils, title: "Relação difícil com alimentação, corpo ou emagrecimento" },
-  ];
-  return (
-    <section className="relative overflow-hidden py-16 md:py-24">
-      <WindLeaves />
-      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
-        {/* data-hide-floating: o botão flutuante não cobre este título no celular */}
-        <div data-hide-floating>
-        <SectionHeader
-          title="Quando buscar terapia online"
-          subtitle="Estes são alguns dos momentos em que a terapia online pode oferecer apoio. Se você se identifica com algum deles, podemos conversar."
-        />
-        </div>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {dores.map((d, i) => (
-            <li
-              key={d.title}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-card transition-[translate,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-secondary/50 hover:shadow-soft motion-reduce:hover:translate-y-0"
-            >
-              <CardLeaves variant={DORES_LEAF_LAYOUTS[i]} />
-              <div className="relative mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary transition-colors duration-500 ease-out group-hover:bg-secondary/45 group-hover:text-foreground">
-                <d.icon className="h-5 w-5" />
-              </div>
-              {/* h3 sem "relative" quando é link: o ::after do link cobre o card */}
-              <h3 className={`${d.href ? "" : "relative "}text-base font-medium leading-snug text-foreground`}>
-                {d.href ? (
-                  // o link cobre o card inteiro (after:inset-0), mantendo o
-                  // texto como nome do link para leitores de tela
-                  <a
-                    href={d.href}
-                    className="after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring"
-                  >
-                    {d.title}
-                  </a>
-                ) : (
-                  d.title
-                )}
-              </h3>
-              {d.href && (
-                <span className="pointer-events-none relative mt-3 inline-flex items-center gap-1 text-sm font-medium text-[#4A4440]">
-                  Saiba mais <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-        {/* WhatsApp + "Entenda mais sobre a ansiedade": lado a lado no desktop,
-            empilhados e com a mesma largura no celular. */}
-        <div className="mx-auto mt-10 flex max-w-sm flex-col items-stretch gap-4 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-          <CTAButton variant="whatsapp" ariaLabel="Agendar uma consulta pelo WhatsApp">
-            <WhatsAppIcon />
-            Agende uma consulta
-          </CTAButton>
-          {/* Sálvia (texto 8,4:1); no hover, o mesmo oliva do hover do WhatsApp
-              com texto branco (5:1). */}
-          <a
-            href="/ansiedade"
-            className="group/cta relative inline-flex min-h-[44px] items-center justify-center overflow-hidden rounded-full bg-[#C5D0B8] px-6 py-3.5 text-base font-semibold text-[#2E2F2A] shadow-[0_4px_14px_rgba(110,130,95,0.25)] transition-[background-color,color,translate] duration-300 ease-out hover:-translate-y-0.5 hover:bg-olive hover:text-white active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:hover:translate-y-0 max-[359px]:px-3 max-[359px]:text-sm"
-          >
-            {/* folhinhas no hover, como nos botões do WhatsApp */}
-            <ButtonLeaves />
-            <span className="relative inline-flex items-center gap-2 whitespace-nowrap">
-              <Leaf aria-hidden="true" className="h-5 w-5" />
-              Entenda mais sobre a ansiedade
-            </span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Especialidades() {
-  const items = [
-    { icon: Activity, label: "Ansiedade" },
-    { icon: CloudRain, label: "Depressão" },
-    { icon: Utensils, label: "Transtornos alimentares" },
-    { icon: HeartPulse, label: "Obesidade e emagrecimento" },
-    { icon: Sparkles, label: "Autoestima e autoimagem" },
-    { icon: Flame, label: "Burnout" },
-    { icon: Hourglass, label: "Procrastinação" },
-    { icon: Ghost, label: "Traumas" },
-    { icon: Waves, label: "Fobias" },
-    { icon: Brain, label: "Bipolaridade" },
-    { icon: Users, label: "Conflitos familiares e conjugais" },
-    { icon: Compass, label: "Autoconhecimento e desenvolvimento pessoal" },
-  ];
-  return (
-    <section
-      id="atendimento"
-      className="relative overflow-hidden py-16 md:py-24"
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, transparent 0, color-mix(in oklab, var(--color-accent) 40%, transparent) 120px, color-mix(in oklab, var(--color-accent) 40%, transparent) calc(100% - 120px), transparent 100%)",
-      }}
-    >
-      <WindLeaves rhythm={RHYTHM_B} />
-      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
-        <SectionHeader
-          title="Temas atendidos na terapia online"
-          subtitle="Atendo demandas variadas em terapia online, sempre respeitando o tempo e a história de cada pessoa."
-        />
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {items.map((it, i) => (
-            <li
-              key={it.label}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-xl border border-border bg-card px-3 py-4 text-[13px] font-medium text-foreground shadow-card transition-[translate,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-secondary/50 hover:shadow-soft motion-reduce:hover:translate-y-0 sm:gap-3 sm:px-4 sm:text-sm"
-            >
-              {/* 3 disposições em sequência: vizinhos não repetem nas grades de 2 e 4 colunas */}
-              <CardLeaves compact variant={i % 3} />
-              {/* margem negativa: o fundo verde aparece no hover sem mudar o layout */}
-              <span className="relative -m-1.5 inline-flex shrink-0 rounded-lg p-1.5 text-primary transition-colors duration-500 ease-out group-hover:bg-secondary/45 group-hover:text-foreground">
-                <it.icon className="h-5 w-5" />
-              </span>
-              <span className="relative min-w-0 leading-snug">{it.label}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-// Grade de 2 colunas: 0 1 / 2 0 — nenhum card repete o vizinho.
-const PASSOS_LEAF_LAYOUTS = [0, 1, 2, 0];
-
-function ComoFunciona() {
-  const steps = [
-    {
-      title: "Primeiro contato pelo WhatsApp",
-      text: "Você me chama no WhatsApp para tirar dúvidas e ver os horários disponíveis.",
-    },
-    {
-      title: "Conversa inicial gratuita (cerca de 20 min)",
-      text: "Um momento para você conhecer meu trabalho e eu entender um pouco do seu momento atual, sem compromisso.",
-    },
-    {
-      title: "Sessões online de 50 minutos",
-      text: "Realizadas por videochamada, em frequência semanal ou quinzenal, conforme o seu processo terapêutico.",
-    },
-    {
-      title: "Plano terapêutico construído junto",
-      text: "A partir da escuta, do acolhimento e da compreensão da sua história, definimos juntos o melhor caminho.",
-    },
-  ];
-  return (
-    <section id="como-funciona" className="relative overflow-hidden py-16 md:py-24">
-      <WindLeaves rhythm={RHYTHM_C} />
-      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
-        <SectionHeader
-          title="Como funciona a terapia online"
-          subtitle="Um caminho simples, claro e acolhedor para você começar."
-        />
-        <ol className="relative grid gap-5 md:grid-cols-2">
-          {steps.map((s, i) => (
-            <li
-              key={s.title}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-card transition-[translate,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-secondary/50 hover:shadow-soft motion-reduce:hover:translate-y-0"
-            >
-              <CardLeaves variant={PASSOS_LEAF_LAYOUTS[i]} />
-              <div className="relative mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold transition-colors duration-500 ease-out group-hover:bg-secondary group-hover:text-foreground">
-                {i + 1}
-              </div>
-              <h3 className="relative text-lg font-semibold text-foreground">{s.title}</h3>
-              <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-10 flex justify-center">
-          <CTAButton variant="whatsapp" ariaLabel="Agendar conversa gratuita pelo WhatsApp">
-            <WhatsAppIcon />
-            Agendar conversa gratuita
-          </CTAButton>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Sobre() {
-  return (
-    <section
-      id="sobre"
-      // Sem overflow-hidden aqui: ele quebraria a foto "grudada" (sticky) no
-      // desktop. As folhas já ficam contidas na própria camada.
-      className="relative py-16 md:py-24"
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, transparent 0, color-mix(in oklab, var(--color-primary-soft) 30%, transparent) 140px, color-mix(in oklab, var(--color-primary-soft) 30%, transparent) calc(100% - 140px), transparent 100%)",
-      }}
-    >
-      <WindLeaves rhythm={RHYTHM_D} />
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-[1fr_1.3fr] md:items-start md:gap-14 md:px-6">
-        <div className="order-1 md:order-1 md:sticky md:top-24">
-          <div className="relative mx-auto max-w-md md:max-w-none">
-            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-secondary/30 to-primary/20 blur-2xl" />
-            <div className="overflow-hidden rounded-3xl border border-border/60 shadow-soft">
-              <img
-                src={sobreImg}
-                alt="Psicóloga Yole Lopes, especialista em terapia online com TCC e Terapia do Esquema"
-                loading="lazy"
-                width={1024}
-                height={1280}
-                className="aspect-[3/4] h-full w-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="order-2">
-          <h2 className="text-3xl font-bold leading-tight text-foreground md:text-4xl">
-            Sobre a psicóloga Yole Lopes
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-[42%] -z-10 h-[460px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(225,232,242,0.13),rgba(225,232,242,0.04)_55%,transparent)]"
+          />
+          <div className="sheen absolute inset-0" />
+          <Eyebrow center>Contato</Eyebrow>
+          <h2 className="luz-passando mx-auto mt-6 w-fit text-4xl sm:text-6xl">
+            Vamos elevar o <span className="text-chrome">padrão</span> de qualidade?
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Desde a adolescência, percebi em mim uma vontade genuína de ajudar as pessoas. Foi na psicologia que encontrei um caminho para transformar isso em escuta, cuidado e presença na vida de quem me procura.
+          <p className="mx-auto mt-6 max-w-xl font-light text-muted-foreground">
+            Aberto a conversas sobre Quality Engineering, liderança de QA e IA aplicada a testes.
           </p>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Acredito que a vida não é sobre ser perfeita, mas sobre ser quem você é. E a terapia é um espaço para isso: um momento de pausa para se acolher, entender sua história e, aos poucos, construir uma vida que faça mais sentido para você.
-          </p>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Nas sessões, conduzo o processo de forma leve e próxima, respeitando o seu tempo. A conversa acontece de maneira natural, enquanto compreendemos padrões, emoções e possibilidades de mudança. Também compartilho com você minha leitura ao longo do processo, para que o caminho seja claro e construído em conjunto.
-          </p>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Meu trabalho é guiado por acolhimento, empatia, escuta ativa, respeito à sua história e ética profissional.
-          </p>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-            No meu trabalho, combino a <strong className="font-semibold text-foreground">Terapia Cognitivo-Comportamental (TCC)</strong>, com sua parte mais prática e cognitiva, com a <strong className="font-semibold text-foreground">Terapia do Esquema</strong>, que aprofunda o trabalho com as emoções e padrões mais antigos. Essa integração me permite oferecer um cuidado mais completo, técnico e humano ao mesmo tempo.
-          </p>
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card px-4 py-2 text-sm font-semibold text-primary shadow-card">
-            <ShieldCheck className="h-4 w-4" />
-            CRP 08/34622
-          </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <CTAButton variant="whatsapp" ariaLabel="Tirar dúvidas pelo WhatsApp">
-              <WhatsAppIcon />
-              Tirar dúvidas pelo WhatsApp
-            </CTAButton>
-            {/* Secundário: contornado quando parado (não concorre com o verde);
-                no hover segue o padrão dos outros: oliva, sobe e folhinhas. */}
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Acompanhe no ${INSTAGRAM_LABEL}`}
-              className="group/cta relative inline-flex min-h-[44px] items-center justify-center overflow-hidden rounded-full border border-foreground/20 bg-transparent px-6 py-3.5 text-base font-medium text-foreground transition-all duration-500 ease-out hover:-translate-y-0.5 hover:border-olive hover:bg-olive hover:text-white hover:shadow-soft active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <ButtonLeaves />
-              <span className="relative inline-flex items-center justify-center gap-2">
-                <InstagramIcon />
-                Acompanhe no Instagram
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProvaSocial() {
-  const reviews = [
-    {
-      name: "N. R.",
-      meta: "3 avaliações · 2 anos atrás",
-      initial: "N",
-      text: "A Yole foi um presente na minha vida!!! Busquei seus serviços para melhorar a minha relação com a comida, mas com todo seu profissionalismo, acolhimento, empatia, respeito e acertividade consegui realmente enxergar o que estava por trás da fuga que eu estava fazendo com a comida. Hoje continuo nesse processo de auto conhecimento e gerenciamento das minhas emoções e decisões e de quebra ainda emagreci 7kgs!!! Super recomendo essa profissional incrível que mudou a minha vida com seu trabalho.",
-    },
-    {
-      name: "G. P.",
-      meta: "Local Guide · 14 avaliações",
-      initial: "G",
-      text: "A Yole é uma profissional super atenciosa e empática. Comecei meu acompanhamento com ela em Dezembro e estou amando. Foi gratificante iniciar minha jornada de auto conhecimento e ir aprendendo aos poucos a entender minhas emoções. Ela vem me ajudando DEMAIS com o burnout que tive no fim do ano passado, retirando muito o peso dos meus ombros no dia a dia. Indico de olhos fechados. Obrigada, dra!",
-    },
-    {
-      name: "A. G.",
-      meta: "1 avaliação · 2 semanas atrás",
-      initial: "A",
-      text: "Quando eu comecei a terapia com a Yole, eu estava destruída. Ela me ajudou a me encontrar, me conhecer, me valorizar, respeitar e a não viver segundo as expectativas dos outros. Eu sou muito grata pelas sessões, com o carinho e acolhimento dela comigo. Yole, sua vida fez diferença na minha… Obrigada por tanto!!",
-    },
-  ];
-  return (
-    <section className="py-16 md:py-24">
-      <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <SectionHeader
-          eyebrow="Avaliações reais do Google"
-          title="O que pacientes dizem sobre o processo terapêutico"
-        />
-        <ul className="grid gap-5 md:grid-cols-3">
-          {reviews.map((r) => (
-            <li
-              key={r.name}
-              className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-card"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <div
-                  aria-hidden
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-base font-semibold text-primary"
-                  style={{ filter: "blur(3px)" }}
-                >
-                  {r.initial}
-                </div>
-                <div className="leading-tight">
-                  <p className="text-sm font-semibold text-foreground">{r.name}</p>
-                  <p className="text-xs text-muted-foreground">{r.meta}</p>
-                </div>
-              </div>
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex gap-0.5 text-amber-500">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  via Google
-                </span>
-              </div>
-              <p className="text-sm leading-relaxed text-muted-foreground">"{r.text}"</p>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-10 flex justify-center">
           <a
-            href="https://www.google.com/search?sca_esv=251dd46310ce0ad5&rlz=1C5AJCO_enBR1193BR1195&cs=0&sxsrf=ANbL-n6GWllpmaJAr5J09jPZ4rQJDkQseQ:1778016303500&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOd13ExxGoEZ9lnIlkoPz4sPpbFlCWRNBT0brQXI7BtU9vTdYNbToei_JXSHR2r75SgH8kbuKmyV5xwi8tn5_QWRPg0_c0u-zz2IohRpR-MUI6Jq65Q%3D%3D&q=Psic%C3%B3loga+Yole+Lopes+Coment%C3%A1rios&sa=X&ved=2ahUKEwivsbLxiqOUAxU8GLkGHaLvCLQQ0bkNegQIIxAF&biw=1440&bih=672&dpr=2"
+            href={LINKEDIN_URL}
             target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-primary/30 bg-card px-6 py-3 text-base font-medium text-primary shadow-card transition-all hover:-translate-y-0.5 hover:bg-primary-soft/50"
+            rel="noreferrer"
+            className="btn-steel-dark mt-10 inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-medium"
           >
-            <Star className="h-4 w-4 fill-current text-amber-500" />
-            Ver avaliações no Google
+            Falar no LinkedIn <ArrowUpRight className="h-4 w-4" />
           </a>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function Horarios() {
-  const items = [
-    { icon: Video, label: "Formato", value: "100% online" },
-    { icon: Clock, label: "Dias", value: "Segunda a sexta" },
-    { icon: Hourglass, label: "Horários", value: "Das 10h às 20h" },
-    { icon: WhatsAppIcon, label: "Agendamento", value: "Pelo WhatsApp" },
-    { icon: ShieldCheck, label: "Remarcação", value: "Aviso com 24h de antecedência" },
-    { icon: Brain, label: "Plano de saúde", value: "Atendimento particular" },
-  ];
-  return (
-    <section
-      className="py-16 md:py-24"
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, transparent 0, color-mix(in oklab, var(--color-accent) 40%, transparent) 120px, color-mix(in oklab, var(--color-accent) 40%, transparent) calc(100% - 120px), transparent 100%)",
-      }}
-    >
-      <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <div className="grid items-center gap-10 md:grid-cols-2">
-          <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-              Praticidade e segurança
-            </p>
-            <h2 className="text-3xl font-bold leading-tight text-foreground md:text-4xl">
-              Atendimento psicológico online: como funciona na prática
-            </h2>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-              Atendimento 100% online por videochamada, com sigilo profissional, conforto e flexibilidade para a sua rotina. O agendamento é simples e direto pelo WhatsApp.
-            </p>
-            <div className="mt-7">
-              <CTAButton variant="whatsapp" ariaLabel="Agendar atendimento online pelo WhatsApp">
-                <WhatsAppIcon />
-                Agendar atendimento online
-              </CTAButton>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="mx-auto overflow-hidden rounded-3xl border border-border/60 shadow-soft md:max-w-sm lg:max-w-md">
-              <img
-                src={bemEstarImg}
-                alt="Atendimento psicológico online com acolhimento, escuta e segurança"
-                loading="lazy"
-                width={1280}
-                height={1600}
-                className="aspect-[4/5] w-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-        <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((it) => (
-            <li
-              key={it.label}
-              className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-4 shadow-card"
-            >
-              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
-                <it.icon className="h-4.5 w-4.5" />
-              </span>
-              <span className="leading-tight">
-                <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {it.label}
-                </span>
-                <span className="block text-sm font-semibold text-foreground">{it.value}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-function FAQ() {
-  const [open, setOpen] = useState<number | null>(0);
-  return (
-    <section id="duvidas" className="py-16 md:py-24">
-      <div className="mx-auto max-w-3xl px-4 md:px-6">
-        <SectionHeader
-          title="Perguntas frequentes sobre terapia online"
-        />
-        <ul className="space-y-3">
-          {FAQS.map((f, i) => {
-            const isOpen = open === i;
-            return (
-              <li
-                key={f.q}
-                className="overflow-hidden rounded-2xl border border-border bg-card shadow-card"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-primary-soft/30 min-h-[44px]"
-                  aria-expanded={isOpen}
-                >
-                  <h3 className="text-base font-semibold text-foreground">{f.q}</h3>
-                  <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-primary transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">
-                    {f.a}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-        <div className="mt-10 flex justify-center">
-          <CTAButton variant="outline" ariaLabel="Tirar dúvidas pelo WhatsApp">
-            <WhatsAppIcon />
-            Tirar dúvidas pelo WhatsApp
-          </CTAButton>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CTAFinal() {
-  return (
-    <section
-      className="relative overflow-hidden py-20 md:py-28"
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, transparent 0, var(--color-accent) 140px, var(--color-accent) 100%)",
-      }}
-    >
-      <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
-        <h2 className="text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
-          Agende sua consulta com a psicóloga Yole Lopes
-        </h2>
-        <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-          A primeira conversa é gratuita e sem compromisso. Fale comigo pelo WhatsApp para agendar seu atendimento psicológico online.
-        </p>
-        <div className="mt-8 flex justify-center">
-          <CTAButton variant="light" className="!px-8 !py-4 text-lg" ariaLabel="Agendar conversa gratuita no WhatsApp">
-            <WhatsAppIcon />
-            Agendar conversa gratuita no WhatsApp
-          </CTAButton>
-        </div>
-      </div>
-    </section>
+      </section>
+    </PageShell>
   );
 }

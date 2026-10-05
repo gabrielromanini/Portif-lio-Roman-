@@ -36,6 +36,8 @@
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-olive: var(--olive);
+  --color-silver: var(--silver);
+  --color-teal: var(--teal);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Cormorant Garamond", "Playfair Display", ui-serif, Georgia, serif;
@@ -46,8 +48,14 @@
   --animate-fade-up: fade-up 0.7s ease-out both;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Selo "Conversa inicial gratuita": glow verde que respira (~4s) */
@@ -55,20 +63,36 @@
   --animate-sparkle-breathe: sparkle-breathe 4s ease-in-out infinite;
 
   @keyframes badge-glow {
-    0%, 100% { box-shadow: 0 0 12px rgba(160, 185, 140, 0.25); }
-    50% { box-shadow: 0 0 22px rgba(160, 185, 140, 0.6); }
+    0%,
+    100% {
+      box-shadow: 0 0 12px rgba(160, 185, 140, 0.25);
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(160, 185, 140, 0.6);
+    }
   }
   @keyframes sparkle-breathe {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.1) rotate(10deg); }
+    0%,
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      transform: scale(1.1) rotate(10deg);
+    }
   }
 
   /* Entrada do hero: fade + leve subida (o atraso vem inline, em sequência) */
   --animate-hero-in: hero-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes hero-in {
-    from { opacity: 0; transform: translateY(0.4em); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(0.4em);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Manchas de luz atrás da foto do hero: deriva lenta, cada uma num ritmo */
@@ -77,16 +101,28 @@
   --animate-blob-3: blob-drift-3 27s ease-in-out infinite alternate;
 
   @keyframes blob-drift-1 {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(28px, 36px) scale(1.08); }
+    from {
+      transform: translate(0, 0) scale(1);
+    }
+    to {
+      transform: translate(28px, 36px) scale(1.08);
+    }
   }
   @keyframes blob-drift-2 {
-    from { transform: translate(0, 0) scale(1.05); }
-    to { transform: translate(-34px, -22px) scale(0.95); }
+    from {
+      transform: translate(0, 0) scale(1.05);
+    }
+    to {
+      transform: translate(-34px, -22px) scale(0.95);
+    }
   }
   @keyframes blob-drift-3 {
-    from { transform: translate(0, 0) scale(0.95); }
-    to { transform: translate(20px, -30px) scale(1.06); }
+    from {
+      transform: translate(0, 0) scale(0.95);
+    }
+    to {
+      transform: translate(20px, -30px) scale(1.06);
+    }
   }
 
   /* Página /ansiedade — exercício de respiração */
@@ -102,40 +138,76 @@
 
   /* Esfera "convidando" a começar: respira sozinha, bem de leve */
   @keyframes orb-idle {
-    0%, 100% { transform: scale(0.74); }
-    50% { transform: scale(0.79); }
+    0%,
+    100% {
+      transform: scale(0.74);
+    }
+    50% {
+      transform: scale(0.79);
+    }
   }
   @keyframes orb-idle-mobile {
-    0%, 100% { transform: scale(0.7); }
-    50% { transform: scale(0.84); }
+    0%,
+    100% {
+      transform: scale(0.7);
+    }
+    50% {
+      transform: scale(0.84);
+    }
   }
   /* Folhas pousadas ao redor da esfera, balançando devagar */
   @keyframes leaf-rest {
-    from { transform: rotate(var(--r0, 0deg)) translateY(0); }
-    to { transform: rotate(var(--r1, 8deg)) translateY(-4px); }
+    from {
+      transform: rotate(var(--r0, 0deg)) translateY(0);
+    }
+    to {
+      transform: rotate(var(--r1, 8deg)) translateY(-4px);
+    }
   }
   /* Folha que se solta ao expirar e voa com o vento */
   @keyframes leaf-away {
-    0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.85); }
-    15% { opacity: 0.9; }
-    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1); }
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg) scale(0.85);
+    }
+    15% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1);
+    }
   }
   /* Anel de progresso de cada etapa (pathLength = 100) */
   @keyframes ring-fill {
-    from { stroke-dashoffset: 100; }
-    to { stroke-dashoffset: 0; }
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
   }
   @keyframes ring-drain {
-    from { stroke-dashoffset: 0; }
-    to { stroke-dashoffset: 100; }
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: 100;
+    }
   }
   /* Bloom suave atrás dos cards de "Como a terapia pode ajudar": a luz
      aumenta e diminui bem devagar (ciclo de 16s). */
   --animate-bloom: bloom 8s ease-in-out infinite alternate;
 
   @keyframes bloom {
-    from { opacity: 0.55; transform: scale(0.96); }
-    to { opacity: 0.9; transform: scale(1.04); }
+    from {
+      opacity: 0.55;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 0.9;
+      transform: scale(1.04);
+    }
   }
 
   /* Folha que sai pela abertura do ciclo ao "Interromper o ciclo":
@@ -143,19 +215,37 @@
   --animate-cycle-leaf-out: cycle-leaf-out 2.6s cubic-bezier(0.3, 0.6, 0.3, 1) 0.4s both;
 
   @keyframes cycle-leaf-out {
-    0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.8); }
-    20% { opacity: 0.95; }
-    100% { opacity: 0; transform: translate(150px, 170px) rotate(120deg) scale(1); }
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg) scale(0.8);
+    }
+    20% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(150px, 170px) rotate(120deg) scale(1);
+    }
   }
 
   /* Ciclo no celular: a luz desce pela linha, some no fim e volta no começo. */
   --animate-cycle-dot-down: cycle-dot-down 14s linear infinite;
 
   @keyframes cycle-dot-down {
-    0% { top: 0%; opacity: 0; }
-    6% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
+    0% {
+      top: 0%;
+      opacity: 0;
+    }
+    6% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
   }
 
   /* Card "Sentindo ansiedade agora?" da home: mini esfera (a mesma da
@@ -163,75 +253,484 @@
   --animate-orb-mini: orb-mini 4s ease-in-out infinite;
 
   @keyframes orb-mini {
-    0%, 100% { transform: scale(0.86); }
-    50% { transform: scale(1.04); }
+    0%,
+    100% {
+      transform: scale(0.86);
+    }
+    50% {
+      transform: scale(1.04);
+    }
   }
 
   @keyframes fade-in-slow {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   --radius: 0.875rem;
-  /* Off-white principal #F7F5F2 */
-  --background: oklch(0.969 0.005 75);
-  /* Texto padrão #333333 */
-  --foreground: oklch(0.29 0 0);
+  /* Preto grafite profundo */
+  --background: oklch(0.13 0.003 250);
+  /* Branco levemente frio */
+  --foreground: oklch(0.95 0.003 250);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.29 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.29 0 0);
+  --card: oklch(0.17 0.004 250);
+  --card-foreground: oklch(0.95 0.003 250);
+  --popover: oklch(0.17 0.004 250);
+  --popover-foreground: oklch(0.95 0.003 250);
 
-  /* Marrom escuro #5E4638 (títulos / CTA forte) */
-  --primary: oklch(0.36 0.028 50);
-  --primary-foreground: oklch(0.985 0.005 75);
-  /* Bege suave e quente #D8CEC5 (fundos suaves) */
-  --primary-soft: oklch(0.838 0.018 70);
+  /* Prata (CTA / destaques) */
+  --primary: oklch(0.86 0.006 250);
+  --primary-foreground: oklch(0.15 0.003 250);
+  --primary-soft: oklch(0.3 0.005 250);
 
-  /* Verde médio #7FAF9C (toques pontuais) */
-  --secondary: oklch(0.71 0.05 160);
-  --secondary-foreground: oklch(0.29 0 0);
+  --secondary: oklch(0.25 0.005 250);
+  --secondary-foreground: oklch(0.95 0.003 250);
 
-  --muted: oklch(0.94 0.008 70);
-  --muted-foreground: oklch(0.45 0.012 55);
+  --muted: oklch(0.2 0.004 250);
+  --muted-foreground: oklch(0.68 0.006 250);
 
-  /* Bege suave e quente #D8CEC5 para banners */
-  --accent: oklch(0.838 0.018 70);
-  --accent-foreground: oklch(0.29 0 0);
-  --sand: oklch(0.86 0.022 70);
+  --accent: oklch(0.25 0.005 250);
+  --accent-foreground: oklch(0.95 0.003 250);
+  --sand: oklch(0.3 0.005 250);
 
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
 
-  --border: oklch(0.86 0.012 70);
-  --input: oklch(0.86 0.012 70);
-  --ring: oklch(0.36 0.028 50);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.12);
+  --ring: oklch(0.86 0.006 250);
 
-  /* Verde WhatsApp */
+  /* Gradientes de metal usados no texto (reaproveitados pela luz dos títulos) */
+  --grad-chrome: linear-gradient(
+    100deg,
+    #8a8f98 0%,
+    #f4f5f7 22%,
+    #a9aeb6 38%,
+    #ffffff 50%,
+    #9ca1a9 62%,
+    #e9ebee 80%,
+    #7d828b 100%
+  );
+  --grad-chrome-vertical: linear-gradient(180deg, #fff 0%, #e4e4e4 42%, #8a8a8a 58%, #c9c9c9 100%);
+  /* Faixa de luz que passa pelos títulos */
+  --luz: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, 0.95) 50%, transparent 75%);
+
+  /* Acento: verde-petróleo da Mercedes F1, usado com parcimônia */
+  --teal: #00a19c;
+
+  /* Prata dos detalhes (linhas, ícones, pontos) */
+  --silver: oklch(0.82 0.008 250);
+
   --whatsapp: oklch(0.68 0.18 148);
   --whatsapp-foreground: oklch(1 0 0);
-
-  /* Verde oliva (hover dos botões de WhatsApp) — contraste ~5:1 com texto branco */
   --olive: oklch(0.52 0.08 118);
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
+  * {
+    border-color: var(--color-border);
+  }
+  /* O Tailwind 4 deixa botões com o cursor padrão; aqui todo botão mostra a "mãozinha" */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2 {
+  h1,
+  h2 {
     font-family: var(--font-serif);
     font-weight: 500;
     letter-spacing: -0.005em;
   }
-  h3, h4 { letter-spacing: -0.01em; }
+  h3,
+  h4 {
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ——— Acabamento cromado: texto metálico, molduras e reflexos ——— */
+@layer components {
+  /* Texto com gradiente de metal escovado */
+  .text-chrome {
+    background: var(--grad-chrome);
+    background-size: 220% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Metal cromado com gradiente vertical (nome do topo) */
+  .text-chrome-vertical {
+    background: var(--grad-chrome-vertical);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Reflexo que passa devagar pelo texto */
+  .text-shine {
+    animation: chrome-shine 7s ease-in-out infinite;
+  }
+
+  /* Luz que passa pelo nome e pelos títulos, só dentro das letras: a faixa é
+     uma camada do próprio preenchimento do texto (background-clip: text).
+     --luz-x é animada no título e herdada pelas partes cromadas; cada parte
+     desconta a própria distância até o início do título (--dx, calculada em
+     Layout.tsx), para a faixa andar como uma só. */
+  .luz-passando {
+    /* Um pouco abaixo do branco, para a faixa de luz aparecer ao passar */
+    --luz-base: oklch(0.8 0.005 250);
+    background-image: var(--luz), linear-gradient(var(--luz-base), var(--luz-base));
+    background-repeat: no-repeat;
+    background-size:
+      220px 100%,
+      100% 100%;
+    background-position:
+      var(--luz-x) 0,
+      0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: luz-titulo 9s ease-in-out infinite;
+  }
+  .luz-passando .text-chrome {
+    background-image: var(--luz), var(--grad-chrome);
+    background-repeat: no-repeat, repeat;
+    background-size:
+      220px 100%,
+      220% 100%;
+    background-position:
+      calc(var(--luz-x) - var(--dx, 0px)) 0,
+      0% 50%;
+    animation: none;
+  }
+
+  /* "Romanini": cromado vertical com um reflexo que passa só dentro das letras.
+     O reflexo é a 1ª camada do background-image; nunca usar o atalho
+     "background:" aqui (nem em hover/keyframes), porque ele reseta o clip. */
+  .text-chrome-reflexo {
+    background-image:
+      linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.9) 50%, transparent 60%),
+      var(--grad-chrome-vertical);
+    background-size:
+      250% 100%,
+      100% 100%;
+    background-repeat: no-repeat;
+    background-position:
+      150% 0,
+      0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: reflexo-nome 4s cubic-bezier(0.2, 0.8, 0.2, 1) 1s infinite;
+  }
+
+  /* Botão de aço escovado: riscos finos horizontais (dois ritmos, para não
+     parecer padrão repetido) + reflexo vertical no meio + base metálica. */
+  .btn-chrome {
+    color: #15171a;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    background:
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px 5px),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 15%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 255, 255, 0) 85%
+      ),
+      linear-gradient(180deg, #e4e6e9 0%, #c2c6cc 45%, #a8adb4 60%, #cfd2d7 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      inset 0 -2px 0 var(--teal),
+      0 8px 28px -12px rgba(220, 225, 235, 0.4);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      filter 0.25s ease;
+  }
+  .btn-chrome:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -2px 0 var(--teal),
+      0 12px 36px -10px color-mix(in oklab, var(--teal) 55%, transparent);
+  }
+
+  /* Quadrados do grid dentro dos modais dos Pilares: aço escovado escuro
+     com filete verde-petróleo no topo. */
+  .quadro-aco {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px),
+      linear-gradient(180deg, #1c1d1f 0%, #141516 100%);
+    border-top: 1px solid rgba(0, 161, 156, 0.35);
+    transition:
+      background-image 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .quadro-aco:hover {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px),
+      linear-gradient(180deg, #232427 0%, #18191b 100%);
+    border-top-color: #00a19c;
+  }
+
+  /* Variante escura: aço grafite escovado, para botões secundários */
+  .btn-steel-dark {
+    color: var(--foreground);
+    background:
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0 1px, transparent 1px 5px),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 15%,
+        rgba(255, 255, 255, 0.09) 50%,
+        rgba(255, 255, 255, 0) 85%
+      ),
+      linear-gradient(180deg, #33363c 0%, #24272c 50%, #1b1d21 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -2px 0 color-mix(in oklab, var(--teal) 70%, transparent),
+      0 8px 24px -14px rgba(0, 0, 0, 0.8);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .btn-steel-dark:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--teal) 60%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -2px 0 var(--teal),
+      0 12px 32px -12px color-mix(in oklab, var(--teal) 50%, transparent);
+  }
+
+  /* Card de vidro escuro com borda metálica fina */
+  .card-chrome {
+    background:
+      linear-gradient(160deg, oklch(0.2 0.004 250 / 0.9), oklch(0.15 0.003 250 / 0.9)) padding-box,
+      linear-gradient(
+          140deg,
+          rgba(255, 255, 255, 0.28),
+          rgba(255, 255, 255, 0.04) 40%,
+          rgba(255, 255, 255, 0.16)
+        )
+        border-box;
+    border: 1px solid transparent;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  /* Cards clicáveis/interativos (com "group"): ao passar o mouse, acendem com
+     o verde-petróleo, igual aos botões. */
+  .card-chrome.group:hover {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--teal) 45%, transparent),
+      inset 0 -2px 0 var(--teal),
+      0 18px 50px -18px color-mix(in oklab, var(--teal) 55%, transparent);
+  }
+
+  /* Moldura cromada da foto */
+  .frame-chrome {
+    background: linear-gradient(140deg, #f4f5f7, #5d6169 30%, #d7dadf 55%, #4a4e55 78%, #c4c8ce);
+    box-shadow: 0 30px 80px -30px rgba(200, 210, 225, 0.35);
+  }
+
+  /* Faixa de luz que atravessa a superfície de tempos em tempos */
+  .sheen,
+  .sheen-hover {
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .sheen::after,
+  .sheen-hover::after {
+    content: "";
+    position: absolute;
+    inset: -50% auto -50% -60%;
+    width: 40%;
+    transform: rotate(18deg) translateX(-150%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+  .sheen::after {
+    animation: sheen-sweep 8s ease-in-out infinite;
+  }
+  .group:hover .sheen-hover::after {
+    animation: sheen-sweep 1.4s ease-out;
+  }
+}
+
+/* ——— Fundos das seções ——— */
+
+/* Expertise: fibra de carbono (padrão sarja), quase invisível */
+.fibra-carbono {
+  opacity: 0.03;
+  background:
+    linear-gradient(27deg, rgba(255, 255, 255, 0.35) 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, rgba(255, 255, 255, 0.35) 5px, transparent 5px) 10px 0,
+    linear-gradient(27deg, rgba(255, 255, 255, 0.7) 5px, transparent 5px) 0 10px,
+    linear-gradient(207deg, rgba(255, 255, 255, 0.7) 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 10px, transparent 10px),
+    linear-gradient(
+      rgba(255, 255, 255, 0.5) 25%,
+      rgba(255, 255, 255, 0.4) 25%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 50%,
+      transparent 75%,
+      rgba(255, 255, 255, 0.8) 75%,
+      rgba(255, 255, 255, 0.8)
+    );
+  background-size: 20px 20px;
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+/* Método: grade de telemetria (linhas finas a cada 32px, mais marcadas a cada 160px) */
+.grade-telemetria {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size:
+    32px 32px,
+    32px 32px,
+    160px 160px,
+    160px 160px;
+  background-position: center top;
+  mask-image:
+    linear-gradient(to bottom, transparent, black 6%, black 94%, transparent),
+    linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-composite: intersect;
+}
+
+/* Trajetória: linha prata que corre a tela, com um "carro" de luz na ponta */
+.linha-pista-trilho {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 205, 212, 0.45) 15%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(200, 205, 212, 0.45) 85%,
+    transparent
+  );
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.linha-pista.correu .linha-pista-trilho {
+  transform: scaleX(1);
+}
+.linha-pista-carro {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 140px;
+  height: 7px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, #fff, rgba(255, 255, 255, 0.35), transparent);
+  opacity: 0;
+}
+.linha-pista.correu .linha-pista-carro {
+  animation: carro-pista 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes carro-pista {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 140px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .linha-pista-trilho {
+    transform: none;
+    transition: none;
+  }
+  .linha-pista.correu .linha-pista-carro {
+    animation: none;
+  }
+}
+
+@keyframes reflexo-nome {
+  from {
+    background-position:
+      150% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -50% 0,
+      0 0;
+  }
+}
+@property --luz-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: -300px;
+}
+@keyframes luz-titulo {
+  0% {
+    --luz-x: -300px;
+  }
+  30%,
+  100% {
+    --luz-x: 1600px;
+  }
+}
+@keyframes chrome-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes sheen-sweep {
+  0% {
+    transform: rotate(18deg) translateX(-150%);
+  }
+  35%,
+  100% {
+    transform: rotate(18deg) translateX(520%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-shine,
+  .luz-passando,
+  .text-chrome-reflexo,
+  .sheen::after,
+  .group:hover .sheen-hover::after {
+    animation: none;
+  }
 }
