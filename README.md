@@ -27,12 +27,12 @@ O projeto começou como cópia do site da psicóloga Yole Lopes. Tudo o que era 
 site-gabriel/
 ├── src/
 │   ├── routes/
-│   │   ├── index.tsx        ← a landing page: topo, Sobre, Expertise, Trajetória, Ferramentas, Contato
+│   │   ├── index.tsx        ← a landing page: topo, Sobre, Expertise, Trajetória, Contato (e a ordem das seções)
 │   │   └── __root.tsx       ← <head> global (sem analytics)
 │   ├── components/portfolio/
 │   │   ├── Layout.tsx       ← menu, rodapé, Eyebrow, fontes e o alinhamento da luz dos títulos
 │   │   ├── Pilares.tsx      ← os 7 pilares e o modal de cada um
-│   │   ├── Metodo.tsx       ← seção "Como a qualidade é construída" (9 partes)
+│   │   ├── Metodo.tsx       ← "Como a qualidade é construída" (6 abas) e a seção "Por que um QA"
 │   │   └── Fundos.tsx       ← fundos decorativos das seções
 │   ├── lib/site.ts          ← nome e link do LinkedIn
 │   ├── assets/              ← foto, logo e fundo do topo
@@ -47,7 +47,7 @@ site-gabriel/
 
 | O quê | Arquivo |
 |---|---|
-| Texto do topo, Sobre, Expertise, Trajetória, Ferramentas, Formação, Contato | `src/routes/index.tsx` |
+| Texto do topo, Sobre, Expertise, Trajetória, Contato | `src/routes/index.tsx` |
 | Os 7 pilares (texto do card, tópicos e ferramentas do modal) | `src/components/portfolio/Pilares.tsx`, constante `PILARES` |
 | Seção Método (Shift Left, pirâmide, heurísticas, quality gates…) | `src/components/portfolio/Metodo.tsx` |
 | Itens do menu | `src/components/portfolio/Layout.tsx`, constante `NAV` |

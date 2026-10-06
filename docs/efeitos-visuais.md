@@ -10,11 +10,11 @@ Estado: 05/10/2026, ainda não publicado.
 
 O site é **uma página só** (`src/routes/index.tsx`). Todo link do menu e dos pilares apenas rola até a seção (`#pilares`, `#metodo`…).
 
-**Ordem:** Menu → Topo (nome + foto) → Pilares → Sobre → Expertise → Método (9 partes) → Trajetória → Ferramentas e Formação → Contato → Rodapé.
+**Ordem:** Menu → Topo (nome + foto) → Pilares → Sobre → Por que um QA → Expertise → Método (5 abas) → Trajetória → Contato → Rodapé.
 
 | Onde | Efeito | Arquivo principal |
 |---|---|---|
-| Menu | Vidro escuro fixo no topo; logo GR; botão LinkedIn em **prata escovado** | `Layout.tsx`, `.btn-chrome` |
+| Menu | Fixo no topo: transparente no início, vidro escuro e mais baixo depois de 40px; barra de progresso de leitura petróleo; item da seção atual em branco com traço petróleo; LinkedIn em **prata escovado** | `Layout.tsx` (`useMenuAoRolar`), `.btn-chrome` |
 | Topo | Fundo de traçados só à esquerda; nome com hierarquia; reflexo dentro do "Romanini"; linha verde-petróleo; foto com moldura cromada | `index.tsx`, `.text-chrome-reflexo`, `.frame-chrome` |
 | Pilares | Traçados espelhados à direita; cards com canto chanfrado; modal com quadrados de aço escovado | `Pilares.tsx`, `Fundos.tsx` (`DiagonaisEspelhadas`) |
 | Expertise | Textura de fibra de carbono (~3%) | `Fundos.tsx` (`FibraCarbono`), `.fibra-carbono` |
@@ -31,7 +31,23 @@ O site é **uma página só** (`src/routes/index.tsx`). Todo link do menu e dos 
 - **Nunca use o atalho `background:`** em classes de texto com brilho (nem em hover ou keyframes): ele reseta o `background-clip` e o texto vira um retângulo. Use `background-image` e `background-position`.
 - **Nada passa por cima da foto.** O reflexo que atravessava a foto foi removido a pedido.
 - **`prefers-reduced-motion`** desliga todas as animações (reflexo, luz dos títulos, linha da pista, reflexo dos cards).
+- **Nunca use `overflow-x: hidden` no contêiner da página:** ele quebra o menu fixo (sticky). Use `overflow-x: clip`.
 - **Conteúdo nunca depende de JS para aparecer.** O site é pré-renderizado; o JavaScript só dispara a linha da pista e alinha a luz dos títulos.
+
+---
+
+## Celular (até 767px)
+
+Tudo o que é só do celular usa `max-md:`/`md:hidden` ou fica no bloco `@media (max-width: 767.98px)` de `styles.css`. **Regra: nada disso pode mudar o desktop.**
+
+| O quê | Onde |
+|---|---|
+| Menu em tela cheia (`MenuMobile`, `BotaoMenu`) | `Layout.tsx`. Fica fora do header porque o `backdrop-filter` do header prenderia um elemento `fixed` dentro dele |
+| Bloom dos cards ao entrar na tela | `useBloomNosCards` (`Layout.tsx`) + `.card-chrome.group.bloom` |
+| Abas do Método (fade, snap, centralizar, dica) | `useAbasNoCelular` (`Metodo.tsx`) + `.dica-abas` |
+| Títulos dos cards sem gradiente | `.titulo-card` |
+| Divisores "01 · PILARES"… | `DivisorSecao` (`Fundos.tsx`) |
+| Espaçamento de 56px | classes `max-md:py-14` / `max-md:pb-14` nas seções |
 
 ---
 
@@ -60,7 +76,7 @@ O site é **uma página só** (`src/routes/index.tsx`). Todo link do menu e dos 
 - Bloco: `line-height .9`, `letter-spacing -0.02em`, nunca quebra linha. Medido em 375 px: o "Romanini" termina em 291 px.
 - Linha de acento: 180×2 px, #00A19C → transparente, com o mesmo `0.3em` do "Romanini" (por isso tem o mesmo `font-size`).
 
-**Reflexo do "Romanini"** (`.text-chrome-reflexo`): duas camadas de `background-image`, a faixa (110°, branco .9) sobre o cromado vertical. `background-size: 250% 100%, 100% 100%`. A animação só mexe em `background-position`, de `150% 0` até `-50% 0`, em 4 s, `cubic-bezier(.2,.8,.2,1)`, com 1 s de atraso. Como o topo do cromado já é quase branco, o reflexo aparece mais na metade de baixo das letras.
+**Reflexo do "Romanini"** (`.text-chrome-reflexo`): duas camadas de `background-image`, a faixa (110°, verde-petróleo .7 com núcleo `rgba(190,255,252,.95)`) sobre o cromado vertical. `background-size: 250% 100%, 100% 100%`. A animação só mexe em `background-position`, de `150% 0` até `-50% 0`, em 4 s, `cubic-bezier(.2,.8,.2,1)`, com 1 s de atraso. Como o topo do cromado já é quase branco, o reflexo aparece mais na metade de baixo das letras.
 
 **Texto acima do nome:** "SOFTWARE QUALITY ENGINEER" (componente `Eyebrow`).
 
@@ -79,7 +95,7 @@ No celular a imagem ocupa só os 46% de baixo do topo, para nenhum risco de luz 
 
 **Cards** (`Pilares.tsx`): são `<button>`, então abrem o modal com teclado também. O primeiro, "Engenharia orientada à qualidade", ocupa 2 colunas. Cada card mostra ícone, nome e uma frase curta, **sem ferramentas** (regra: os pilares não são uma lista de ferramentas).
 
-- **Canto chanfrado** (`CantoChanfrado`): SVG de tamanho fixo (340×240) no canto superior esquerdo, com duas linhas que se apagam nas pontas. É fixo para o ângulo não distorcer em cards de tamanhos diferentes. Por isso o texto começa mais abaixo (`pt-28`) e o ícone fica à direita.
+- **Canto chanfrado** (`CantoChanfrado`): gradiente de petróleo (.4) no chanfro a prata (.12) nas pontas; no hover uma 2ª camada toda em #00A19C com glow aparece por opacidade em .3 s. SVG de tamanho fixo (340×240), para o ângulo não distorcer; por isso o texto começa mais abaixo (`pt-28`) e o ícone fica à direita.
 - **Hover:** cursor de "mãozinha", o card sobe, acende em verde-petróleo e a seta do "Ver detalhes" dá um pulo.
 
 **Modal** (Radix Dialog): fundo desfocado, zoom suave. Mostra a descrição, os tópicos em grade de 2 colunas, as ferramentas (discretas, só onde fazem sentido) e o botão "Ver no método". Esse botão fecha o modal e rola até a parte do método, com um pequeno atraso para a página já estar destravada.
@@ -108,7 +124,7 @@ Todo `<button>` tem cursor de "mãozinha" (regra em `@layer base`), porque o Tai
 
 ## Cards (`.card-chrome`)
 
-Vidro escuro com borda metálica fina (gradiente no `border-box`). Os cards com a classe `group` (pilares, Expertise, "Por que um QA" e Heurísticas) acendem no hover com borda, filete e glow verde-petróleo. Os outros (Ferramentas, Formação, Métricas) não reagem, para não parecerem clicáveis.
+Vidro escuro com borda metálica fina (gradiente no `border-box`). Os cards com a classe `group` (pilares, Expertise, "Por que um QA" e Heurísticas) acendem no hover com borda, filete e glow verde-petróleo. Os outros (Métricas, por exemplo) não reagem, para não parecerem clicáveis.
 
 `.sheen-hover`: reflexo que atravessa o card uma vez no hover. `.sheen`: o mesmo reflexo passando sozinho a cada 8 s; hoje só no card de Contato.
 
@@ -116,7 +132,7 @@ Vidro escuro com borda metálica fina (gradiente no `border-box`). Os cards com 
 
 ## Luz dos títulos (`.luz-passando`)
 
-Todos os `<h2>` de seção (Pilares, Sobre, Expertise, as 9 partes do Método, Trajetória e Contato) têm uma faixa de luz que passa **só dentro das letras**, a cada 9 s.
+Todos os `<h2>` de seção (Pilares, Sobre, Por que um QA, Expertise, as partes do Método, Trajetória e Contato) têm uma faixa de luz que passa **só dentro das letras**, a cada 9 s.
 
 - **O título é um bloco de texto recortado:** a faixa (`--luz`) é a 1ª camada e a cor base (`--luz-base`, cinza-prata `oklch(0.8 …)`) é a 2ª. A cor base fica um pouco abaixo do branco de propósito: em texto branco, a faixa branca não aparece.
 - **Partes cromadas do título** (`<em className="text-chrome">`) têm a faixa por cima do próprio cromado.
@@ -133,7 +149,7 @@ Todos ficam atrás do conteúdo (`-z-10`) dentro de um `<div className="relative
 
 | Seção | Componente | Como funciona |
 |---|---|---|
-| Pilares | `DiagonaisEspelhadas` | Traçados do topo espelhados, 25%, só à direita, sumindo em cima e embaixo |
+| Pilares | `DiagonaisEspelhadas` | SVG com a geometria da imagem de traçados, espelhado à direita: linha principal verde-petróleo com glow, demais em prata (.15 a .25); 40% no celular |
 | Expertise | `FibraCarbono` | Padrão de sarja em CSS (`.fibra-carbono`), opacidade .03, apagando em cima e embaixo |
 | Método | `GradeTelemetria` | Linhas de 1 px a cada 32 px (2,5%) e a cada 160 px (4,5%), sumindo nas bordas |
 | Trajetória | `LinhaPista` | `IntersectionObserver`: quando a seção entra na tela, o trilho cresce da esquerda para a direita (1,8 s) com um "carro" de luz na ponta. Corre uma vez só |
@@ -143,16 +159,21 @@ Todos ficam atrás do conteúdo (`-z-10`) dentro de um `<div className="relative
 
 ## Seção Método (`Metodo.tsx`)
 
-Abre com "Como a qualidade é construída" e atalhos (chips) para as 9 partes:
-1. Por que um QA (4 cards)
-2. Shift Left (comparação "modelo tradicional × Shift Left")
-3. Pirâmide (camadas desenhadas com `clip-path`)
-4. Heurísticas (6 cards)
-5. Tipos de teste (grade de 10)
-6. Produto (citação + lista)
-7. Métricas (Antes, Durante, Depois)
-8. Quality Gates (Commit → Gate 1–4 → Produção + como são criados)
-9. Automação (Page Objects + exemplo em Playwright)
+Abre com "Como a qualidade é construída" e **6 abas reais** (só o conteúdo da aba escolhida aparece):
+
+| Aba | Conteúdo |
+|---|---|
+| Estratégia | Shift Left (comparação "tradicional × Shift Left") + Pirâmide (camadas com `clip-path`) |
+| Cultura | "Qualidade é responsabilidade de todos": card comparativo por papéis (Produto, Design, Desenvolvimento, QA, Liderança), tradicional × cultura de qualidade, + checklist. Mesma estrutura do Shift Left |
+| Testes | Heurísticas (6 cards) + Tipos de teste (grade de 10) |
+| Produto | Citação + lista |
+| Métricas | Métricas (Antes, Durante, Depois) + Quality Gates (Commit → Gate 1–4 → Produção) |
+| Automação | Page Objects + exemplo em Playwright |
+
+- **Abas:** `role="tablist"`, 12 px entre elas, numa linha só; no celular, rolagem horizontal sem barra. A aba ativa tem borda e texto em verde-petróleo. As setas ← → do teclado trocam de aba. 64 px entre as abas e o conteúdo.
+- **Painéis fechados continuam no HTML** (`hidden`), então o conteúdo segue indexável.
+- **"Ver no método" dos pilares** chama `irParaMetodo("quality-gates")`, por exemplo. A função abre a aba que contém aquela parte e só depois rola até ela. Um endereço com `#parte` também abre a aba certa ao carregar. A lista de partes de cada aba fica na constante `ABAS`.
+- **"Por que ter um engenheiro de qualidade no time"** saiu das abas e virou a seção própria `PorQueQaSection`, logo depois do Sobre.
 
 Sem numeração visível (pedido: "não quero tudo enumerado").
 

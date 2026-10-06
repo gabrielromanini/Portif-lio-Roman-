@@ -426,7 +426,14 @@
      "background:" aqui (nem em hover/keyframes), porque ele reseta o clip. */
   .text-chrome-reflexo {
     background-image:
-      linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.9) 50%, transparent 60%),
+      linear-gradient(
+        110deg,
+        transparent 38%,
+        rgba(0, 161, 156, 0.7) 45%,
+        rgba(190, 255, 252, 0.95) 50%,
+        rgba(0, 161, 156, 0.7) 55%,
+        transparent 62%
+      ),
       var(--grad-chrome-vertical);
     background-size:
       250% 100%,
@@ -620,6 +627,105 @@
     linear-gradient(to bottom, transparent, black 6%, black 94%, transparent),
     linear-gradient(to right, transparent, black 15%, black 85%, transparent);
   mask-composite: intersect;
+}
+
+/* ——— Só no celular (até 767px). Nada aqui afeta o desktop. ——— */
+@media (max-width: 767.98px) {
+  /* Títulos dos cards do Método: sem gradiente, cor sólida e números alinhados (E2E) */
+  .titulo-card {
+    background: none;
+    -webkit-text-fill-color: #f0f0f0;
+    color: #f0f0f0;
+    font-weight: 500;
+    letter-spacing: 0;
+    font-size: 24px;
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Bloom: o card acende quando 40% dele está na tela (classe posta em Layout.tsx) */
+  .card-chrome.group {
+    transition:
+      box-shadow 0.6s ease,
+      border-color 0.6s ease;
+  }
+  .card-chrome.group.bloom {
+    box-shadow: 0 0 40px -10px rgba(0, 161, 156, 0.35);
+    border-color: rgba(0, 161, 156, 0.35);
+  }
+
+  /* Abas do Método: deslizam 40px e voltam, uma vez, como dica de rolagem */
+  .dica-abas {
+    animation: dica-abas 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s;
+  }
+
+  /* Menu mobile: itens entram em sequência (atraso em linha, 40ms por item) */
+  .menu-item {
+    animation: menu-item 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+@keyframes dica-abas {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-40px);
+  }
+}
+@keyframes menu-item {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-chrome.group {
+    transition: none;
+  }
+  .menu-item,
+  .dica-abas {
+    animation: none;
+  }
+}
+
+/* Topo "Silver Arrow": filete verde-petróleo com glow e um brilho que percorre a
+   linha a cada 6 s. O glow é drop-shadow (segue a transparência do gradiente),
+   para não acender a parte transparente da linha como faria um box-shadow. */
+.filete-petroleo {
+  background-image:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent),
+    linear-gradient(90deg, transparent, #00a19c);
+  background-size:
+    20% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    -25% 0,
+    0 0;
+  filter: drop-shadow(0 0 9px #00a19c);
+  animation: filete-brilho 6s ease-in-out infinite;
+}
+@keyframes filete-brilho {
+  0% {
+    background-position:
+      -25% 0,
+      0 0;
+  }
+  35%,
+  100% {
+    background-position:
+      125% 0,
+      0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .filete-petroleo {
+    animation: none;
+  }
 }
 
 /* Trajetória: linha prata que corre a tela, com um "carro" de luz na ponta */

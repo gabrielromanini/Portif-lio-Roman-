@@ -9,6 +9,37 @@ Registro do que foi pedido, o que foi feito, **o que foi testado e descartado** 
 
 ---
 
+## 06/10/2026: títulos de seção mais limpos
+
+- Removidos os rótulos pequenos acima dos títulos (Pilares, Sobre, Expertise, Método e as 9 partes dele, Trajetória, Contato). O título grande de cada seção ficou sozinho.
+- Mantido o "SOFTWARE QUALITY ENGINEER" acima do nome, que é o cargo.
+- Sobre: título mantido; os 3 parágrafos viraram um texto de venda em três partes: o caminho inverso (pensar em como falha antes do código), "Para empresas" e "Para quem está tirando uma ideia do papel" (esses dois trechos em branco, com o resto em cinza).
+- Título da Expertise: "O que é entregue" virou "Qualidade na *prática*" (itálico cromado, como nos outros títulos).
+- Método reorganizado em 5 abas reais (Estratégia, Testes, Produto, Métricas, Automação), juntando as partes sem apagar conteúdo; aba ativa em verde-petróleo. "Por que um QA" saiu das abas e virou seção própria logo depois do Sobre. O "Ver no método" dos pilares agora abre a aba certa antes de rolar.
+- Nova aba "Cultura" no Método (depois movida para o fim, após Automação), com a mesma estrutura do Shift Left: papéis no lugar das fases, barra só em QA no modelo tradicional e em todos na cultura de qualidade.
+- Aba Produto: a citação do primeiro card ficava colada embaixo; agora fica centralizada no espaço abaixo dos ícones.
+- Trajetória: removidas as datas de cada cargo (a ordem das empresas continua a cronológica, da mais recente para a mais antiga).
+- Trajetória: nova entrada no topo, "Projetos Independentes" (Desenvolvedor Front-end · Freelancer). Nomes das empresas com `lining-nums`, para os números de "Frota162" não ficarem desalinhados (a Cormorant usa números "de texto" por padrão).
+- Removida a seção Ferramentas e Formação (lista de ferramentas e o card da UniCesumar).
+- Resumo do topo: "liderando equipes de engenheiros de qualidade" encurtado para "liderando equipes".
+- Contato reescrito para os dois públicos (vender também projetos, sem citar "sites" ou "sistemas"): título "Vamos construir algo com *qualidade*?" e duas colunas, "Para times" e "Para quem tem uma ideia".
+- **Teste "Silver Arrow" no topo** (constante `FUNDO_HERO` em `index.tsx`; `"tracados"` volta ao fundo anterior): aço escovado escuro, faixa de luz verde-petróleo no canto inferior direito com 3 filetes a -14°, reflexo prateado no canto superior esquerdo, foto com sombra escura + toque petróleo. O fundo do topo desce 240px para dentro dos Pilares e apaga nos últimos 320px (antes terminava numa linha reta).
+- Linhas dos Pilares redesenhadas em SVG (mesma geometria da imagem de traçados, espelhada): principal em verde-petróleo com glow e pontas apagadas; secundárias, tracejada e marcas em prata sutil.
+- Contorno chanfrado dos cards: petróleo no chanfro indo a prata nas pontas; no hover, todo em #00A19C com glow.
+- Reflexo do "Romanini" passou de branco para verde-petróleo (núcleo verde-água claro); os títulos continuam com a luz branca.
+- Header: transparente no topo; depois de 40px vira vidro escuro (blur 14px, saturação 140%) e fica ~15% mais baixo. Barra de progresso de leitura petróleo na base (rAF + scaleX). Item do menu ativo em branco com traço petróleo (IntersectionObserver); no hover o traço cresce da esquerda. **Corrigido:** o menu não ficava preso no topo porque o contêiner da página usava `overflow-x: hidden` (virava contêiner de rolagem); trocado por `overflow-x: clip`. As seções já têm `scroll-margin-top` de 80px (`scroll-mt-20`); um `scroll-padding-top` extra no `html` foi testado e removido porque somava com ele (a seção parava a 160px do topo).
+- **Celular (até 767px; desktop intocado, testado em 375, 393 e 1440px):**
+  - Menu: só logo + botão de 2 linhas (vira X); painel em tela cheia com links em serifa 32px entrando em sequência, item atual com traço petróleo, LinkedIn no rodapé; fecha no link, no X ou no Esc; trava a rolagem e prende o foco.
+  - Topo: 32px entre o menu e o "SOFTWARE QUALITY ENGINEER", com espaçamento entre letras .25em.
+  - Abas do Método: scroll-snap, fade na borda com abas escondidas, aba ativa centralizada, deslize de dica uma vez, área de toque de 44px.
+  - Títulos dos cards do Método (heurísticas, pirâmide, métricas): cor sólida #f0f0f0, 24px, peso 500, números alinhados.
+  - Bloom: cards interativos acendem em petróleo quando 40% deles está na tela.
+  - Espaçamento: seções com 56px em cima e embaixo, 24px entre título e primeiro parágrafo, sem padding somado entre as partes do Método.
+  - Divisores entre seções ("01 · PILARES" … "06 · CONTATO"), com a linha crescendo do centro uma vez. "Por que um QA" conta como parte do Sobre (sem divisor entre os dois), e a linha de pista da Trajetória fica escondida no celular para não duplicar.
+- Expertise ("O que é entregue") reescrita para quem não é da área de QA (o site também vai atender desenvolvedores e clientes de sites): Quality Engineering abrindo com "Software entregue com altíssima qualidade"; "Automação E2E" virou "Automação de testes", explicando o que é e o ganho; CI/CD sem citar Argo nem nomes de ferramentas de relatório.
+
+---
+
 ## 05/10/2026: de site da Yole a portfólio do Gabriel (não publicado)
 
 Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
@@ -63,6 +94,8 @@ Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
 
 ## Pendências
 
+- **Contato direto:** hoje só há LinkedIn. Para vender projetos, um botão de e-mail ou WhatsApp ao lado tende a converter mais. Falta definir qual contato expor.
+
 - **Salvar no git:** nada do dia foi commitado ainda. Também não há repositório remoto (GitHub) nem hospedagem configurados.
 - **GitHub:** o link vai entrar no site depois.
 - **Ícone da aba (favicon):** ainda é o da Yole. Gerar a partir do monograma GR.
@@ -76,5 +109,4 @@ Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
 - **Título "O que é entregue"** (Expertise): sugerido trocar por "Especialidades".
 - **Reflexo do card de Contato:** ficou; perguntar se sai, como saiu o da foto.
 - **Bloco "Produção"** dos quality gates: ainda prata; avaliar se fica grafite como os botões.
-- **Datas do currículo:** Autoforce até set/2025 e Frota162 desde jun/2025 se sobrepõem. Confirmar.
 - **Métricas e heurísticas do Método:** só o churn rate veio do currículo; o resto foi sugerido. Se houver números reais de antes e depois, vale destacar.

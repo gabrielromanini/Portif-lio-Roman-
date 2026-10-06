@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { irParaMetodo } from "@/components/portfolio/Metodo";
 import {
   ArrowLeftToLine,
   ArrowUpRight,
@@ -12,8 +13,6 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { Eyebrow } from "@/components/portfolio/Layout";
-
 type Pilar = {
   icon: LucideIcon;
   title: string;
@@ -220,6 +219,12 @@ const PILARES: Pilar[] = [
  */
 function CantoChanfrado() {
   const id = useId();
+  // Normal: petróleo no chanfro (≈36% do gradiente) até prata nas pontas.
+  // Hover: uma 2ª camada toda em #00A19C aparece por opacidade (gradientes não animam).
+  const contorno = "M9 230 V98 Q9 86 18 78 L80 21 Q89 13 102 13 H340";
+  const interno = "M19 210 V104 Q19 94 27 87 L86 33 Q94 25 106 25 H300";
+  const hover =
+    "opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:opacity-100 motion-reduce:transition-none";
   return (
     <svg
       aria-hidden
@@ -227,7 +232,7 @@ function CantoChanfrado() {
       height="240"
       viewBox="0 0 340 240"
       fill="none"
-      className="pointer-events-none absolute left-0 top-0 opacity-70 transition-opacity duration-500 group-hover:opacity-100"
+      className="pointer-events-none absolute left-0 top-0"
     >
       <defs>
         <linearGradient
@@ -238,22 +243,9 @@ function CantoChanfrado() {
           y2="0"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.38" stopColor="#fff" stopOpacity="0.85" />
-          <stop offset="0.55" stopColor="#d7dadf" stopOpacity="0.6" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient
-          id={`${id}-b`}
-          x1="0"
-          y1="240"
-          x2="340"
-          y2="0"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0.1" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.42" stopColor="#fff" stopOpacity="0.35" />
-          <stop offset="0.85" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0" stopColor="rgb(220,220,220)" stopOpacity="0.12" />
+          <stop offset="0.36" stopColor="rgb(0,161,156)" stopOpacity="0.4" />
+          <stop offset="1" stopColor="rgb(220,220,220)" stopOpacity="0.12" />
         </linearGradient>
         <radialGradient id={`${id}-g`} cx="70" cy="40" r="120" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#fff" stopOpacity="0.07" />
@@ -261,16 +253,16 @@ function CantoChanfrado() {
         </radialGradient>
       </defs>
       <rect width="340" height="240" fill={`url(#${id}-g)`} />
-      <path
-        d="M9 230 V98 Q9 86 18 78 L80 21 Q89 13 102 13 H340"
-        stroke={`url(#${id}-a)`}
-        strokeWidth="1.25"
-      />
-      <path
-        d="M19 210 V104 Q19 94 27 87 L86 33 Q94 25 106 25 H300"
-        stroke={`url(#${id}-b)`}
-        strokeWidth="1"
-      />
+
+      {/* Normal */}
+      <path d={contorno} stroke={`url(#${id}-a)`} strokeWidth="1.25" />
+      <path d={interno} stroke={`url(#${id}-a)`} strokeWidth="1" opacity="0.6" />
+
+      {/* Hover */}
+      <g className={`${hover} [filter:drop-shadow(0_0_6px_rgba(0,161,156,0.5))]`}>
+        <path d={contorno} stroke="#00a19c" strokeWidth="1.25" />
+        <path d={interno} stroke="#00a19c" strokeWidth="1" opacity="0.6" />
+      </g>
     </svg>
   );
 }
@@ -282,15 +274,18 @@ export function PilaresSection() {
   const pilar = PILARES[indice];
 
   // Fecha o modal e só depois rola, para a página já estar destravada.
+  // Abre a aba certa do Método antes de rolar (ver irParaMetodo).
   function irPara(hash: string) {
     setAberto(false);
-    setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" }), 250);
+    setTimeout(() => irParaMetodo(hash.slice(1)), 250);
   }
 
   return (
-    <section id="pilares" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 pt-8 sm:px-6">
-      <Eyebrow>Pilares</Eyebrow>
-      <h2 className="luz-passando mt-6 w-fit max-w-3xl text-4xl leading-tight sm:text-5xl">
+    <section
+      id="pilares"
+      className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 pt-8 max-md:py-14 sm:px-6"
+    >
+      <h2 className="luz-passando w-fit max-w-3xl text-4xl leading-tight sm:text-5xl">
         Os pilares da <em className="text-chrome">qualidade de software</em>
       </h2>
 

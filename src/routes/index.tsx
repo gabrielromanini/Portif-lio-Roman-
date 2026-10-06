@@ -1,13 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/gabriel-hero.jpeg";
-import bgHero3840 from "@/assets/bg-hero-3840.webp";
 import {
   ArrowRight,
   ArrowUpRight,
   Bot,
-  GaugeCircle,
   GitBranch,
-  GraduationCap,
   Linkedin,
   MapPin,
   ShieldCheck,
@@ -15,28 +12,27 @@ import {
 } from "lucide-react";
 import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
 import { Eyebrow, FONTS_LINKS, PageShell } from "@/components/portfolio/Layout";
-import { MetodoSections } from "@/components/portfolio/Metodo";
+import { MetodoSections, PorQueQaSection } from "@/components/portfolio/Metodo";
 import { PilaresSection } from "@/components/portfolio/Pilares";
 import {
+  DivisorSecao,
+  SilverArrowHero,
+  TracadosHero,
   DiagonaisEspelhadas,
   FibraCarbono,
   GradeTelemetria,
   LinhaPista,
 } from "@/components/portfolio/Fundos";
 
-// Fundo de traçados da primeira dobra: só o lado esquerdo aparece (some antes
-// da foto), apaga embaixo e abre um "buraco" suave atrás do texto.
-const HERO_BG_MASK = {
-  maskImage:
-    "radial-gradient(ellipse 30% 42% at 27% 52%, transparent 55%, black 100%), linear-gradient(to bottom, black 75%, transparent), linear-gradient(to right, black 35%, transparent 55%)",
-  maskComposite: "intersect",
-} as const;
+// Teste do fundo do topo: "silver-arrow" (novo) ou "tracados" (versão anterior).
+// Para voltar, basta trocar para "tracados".
+const FUNDO_HERO: "silver-arrow" | "tracados" = "silver-arrow";
 
 const EXPERTISE = [
   {
     icon: ShieldCheck,
     title: "Quality Engineering",
-    text: "Estruturação de áreas de QA do zero: processos, governança, estratégia, roadmap e cultura de qualidade com Shift Left e Quality Champions.",
+    text: "Software entregue com altíssima qualidade: estratégia de testes, cultura de qualidade no time e testes bem implementados, do planejamento à produção.",
   },
   {
     icon: Bot,
@@ -45,20 +41,30 @@ const EXPERTISE = [
   },
   {
     icon: Workflow,
-    title: "Automação E2E",
-    text: "Automações com Cypress e Playwright, testes de API com Postman e Cypress, e testes de carga com K6.",
+    title: "Automação de testes",
+    text: "Testes que rodam sozinhos, sem interação humana, sempre que o software muda. O ganho: erros encontrados em minutos, entregas mais rápidas e a segurança de que o que já funcionava continua funcionando.",
   },
   {
     icon: GitBranch,
     title: "CI/CD & Observabilidade",
-    text: "Testes integrados ao pipeline via Argo Workflows, com Allure Reports e Cypress Cloud para rastreabilidade e métricas de qualidade.",
+    text: "Testes integrados ao pipeline de entrega: cada alteração é verificada automaticamente antes de ir para o ar, com relatórios que mostram a saúde do software e a evolução da qualidade ao longo do tempo.",
   },
 ];
 
 const EXPERIENCE = [
   {
+    company: "Projetos Independentes",
+    roles: [{ title: "Desenvolvedor Front-end · Freelancer" }],
+    points: [
+      "Criação de websites e landing pages para clientes de diferentes segmentos, do levantamento de necessidades à publicação.",
+      "Interfaces responsivas, pensadas primeiro para o celular.",
+      "Performance, acessibilidade e boas práticas de SEO tratadas como requisito desde a estrutura.",
+      "Código organizado e fácil de manter, validado com o olhar de engenharia de qualidade antes de cada entrega.",
+    ],
+  },
+  {
     company: "Frota162",
-    roles: [{ title: "Consultor de Qualidade de Software", period: "Jun 2025 — atual" }],
+    roles: [{ title: "Consultor de Qualidade de Software" }],
     points: [
       "Estruturação da área de QA com processos, governança e cultura de qualidade para 5 squads simultâneas.",
       "Referência de qualidade para cerca de 23 desenvolvedores, promovendo Shift Left Testing e Quality Champions.",
@@ -69,10 +75,7 @@ const EXPERIENCE = [
   },
   {
     company: "Autoforce",
-    roles: [
-      { title: "QA Lead", period: "Dez 2023 — Set 2025" },
-      { title: "QA Sênior", period: "Jun 2022 — Dez 2023" },
-    ],
+    roles: [{ title: "QA Lead" }, { title: "QA Sênior" }],
     points: [
       "Gestão e desenvolvimento do time de Qualidade de Software, com 5 QAs.",
       "Definição da estratégia, aplicação de Shift Left Testing e roadmap da área de QA.",
@@ -82,7 +85,7 @@ const EXPERIENCE = [
   },
   {
     company: "SóCarrão",
-    roles: [{ title: "QA Analyst", period: "Jun 2021 — Jun 2022" }],
+    roles: [{ title: "QA Analyst" }],
     points: [
       "Planejamento e levantamento de requisitos de testes.",
       "Automação com Cypress e testes de API com Postman.",
@@ -91,7 +94,7 @@ const EXPERIENCE = [
   },
   {
     company: "Roit Bank",
-    roles: [{ title: "QA Analyst", period: "Nov 2020 — Abr 2021" }],
+    roles: [{ title: "QA Analyst" }],
     points: [
       "Testes funcionais, mobile e de API com Postman.",
       "Testes automatizados com Cypress.",
@@ -99,28 +102,12 @@ const EXPERIENCE = [
   },
   {
     company: "Mirum Brasil",
-    roles: [{ title: "QA Analyst", period: "Jun 2018 — Nov 2020" }],
+    roles: [{ title: "QA Analyst" }],
     points: [
       "Testes funcionais: regressão, exploratórios e smoke.",
       "Automação com Ruby e Cucumber, e testes de API com Postman.",
     ],
   },
-];
-
-const STACK = [
-  "Cypress",
-  "Playwright",
-  "Postman",
-  "K6",
-  "Ruby + Cucumber",
-  "Argo Workflows",
-  "Allure Reports",
-  "Cypress Cloud",
-  "GenAI / LLM",
-  "MCP",
-  "Shift Left Testing",
-  "Testes de API",
-  "Testes mobile",
 ];
 
 export const Route = createFileRoute("/")({
@@ -148,19 +135,11 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <PageShell>
-      {/* HERO: traçados cromados de fundo, ocupando a largura toda da tela */}
+      {/* HERO: fundo decorativo ocupando a largura toda da tela */}
       <div className="relative">
-        <img
-          src={bgHero3840}
-          alt=""
-          aria-hidden
-          width={3840}
-          height={2160}
-          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[46%] w-full select-none object-cover opacity-25 mix-blend-screen md:top-0 md:h-full"
-          style={HERO_BG_MASK}
-        />
+        {FUNDO_HERO === "silver-arrow" ? <SilverArrowHero /> : <TracadosHero />}
         {/* HERO */}
-        <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-24 pt-20 sm:px-6 md:grid-cols-[1.4fr_1fr] md:pt-28">
+        <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-24 pt-8 max-md:pb-14 sm:px-6 md:grid-cols-[1.4fr_1fr] md:pt-28">
           <div className="animate-fade-up">
             <Eyebrow>Software Quality Engineer</Eyebrow>
             <h1 className="mt-8 whitespace-nowrap leading-[0.9] tracking-[-0.02em]">
@@ -179,8 +158,7 @@ function Index() {
             <p className="mt-8 max-w-xl text-lg font-light leading-relaxed text-muted-foreground">
               Mais de 8 anos construindo qualidade de software em ambientes ágeis de alta escala:
               estruturando áreas de QA do zero, desenvolvendo software com ênfase em qualidade,
-              liderando equipes de engenheiros de qualidade e aplicando Inteligência Artificial à
-              engenharia de testes.
+              liderando equipes e aplicando Inteligência Artificial à engenharia de testes.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
@@ -205,7 +183,13 @@ function Index() {
 
           {/* Foto com moldura cromada */}
           <div className="relative mx-auto aspect-[4/5] w-full max-w-sm animate-fade-up [animation-delay:150ms]">
-            <div className="frame-chrome absolute inset-0 rounded-[2rem]" />
+            <div
+              className={`frame-chrome absolute inset-0 rounded-[2rem] ${
+                FUNDO_HERO === "silver-arrow"
+                  ? "shadow-[0_30px_80px_rgba(0,0,0,0.6),0_0_50px_rgba(0,161,156,0.12)]"
+                  : ""
+              }`}
+            />
             <div className="absolute inset-[1px] overflow-hidden rounded-[calc(2rem-1px)] bg-background">
               <img
                 src={heroImg}
@@ -221,46 +205,67 @@ function Index() {
         </section>
       </div>
 
+      <DivisorSecao numero="01" nome="Pilares" />
+
       <div className="relative">
         <DiagonaisEspelhadas />
         <PilaresSection />
       </div>
 
+      <DivisorSecao numero="02" nome="Sobre" />
+
       {/* SOBRE */}
-      <section id="sobre" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-28 sm:px-6">
-        <div className="grid gap-12 md:grid-cols-[1fr_1.6fr]">
+      <section
+        id="sobre"
+        className="mx-auto max-w-6xl scroll-mt-20 px-4 py-28 max-md:py-14 sm:px-6"
+      >
+        <div className="grid gap-12 max-md:gap-6 md:grid-cols-[1fr_1.6fr]">
           <div>
-            <Eyebrow>Sobre</Eyebrow>
-            <h2 className="luz-passando mt-6 w-fit text-4xl leading-tight sm:text-5xl">
+            <h2 className="luz-passando w-fit text-4xl leading-tight sm:text-5xl">
               Qualidade como <em className="text-chrome">estratégia</em>, não como etapa.
             </h2>
           </div>
           <div className="space-y-6 text-base font-light leading-relaxed text-muted-foreground sm:text-lg">
             <p>
-              Atuação com foco em Quality Engineering, automação E2E e cultura de qualidade, com
-              experiência estruturando áreas de QA do zero: definindo processos, governança e
-              liderança técnica para várias squads ao mesmo tempo.
+              A maioria dos softwares é construída primeiro e testada depois. Aqui, o caminho é o
+              inverso: cada funcionalidade é pensada a partir de como pode falhar, antes da primeira
+              linha de código. O resultado são entregas que chegam prontas, com menos retrabalho,
+              menos surpresas e mais confiança para evoluir.
             </p>
             <p>
-              Foco atual em integrar Inteligência Artificial (GenAI, LLM e MCP) à engenharia de
-              testes: evolução de frameworks internos, automação de análises e geração de cenários e
-              planos de teste com agentes inteligentes.
+              <strong className="font-normal text-foreground">Para empresas</strong>, isso significa
+              qualidade estruturada como parte da engenharia: processos sólidos, governança e times
+              que entregam mais rápido sem abrir mão da estabilidade. Um trabalho potencializado por
+              Inteligência Artificial (GenAI, LLM e MCP), que automatiza análises e acelera a
+              criação de cenários de teste.
             </p>
             <p>
-              Perfil hands-on e estratégico, combinando liderança técnica, automação com Cypress e
-              Playwright, integração com CI/CD, testes manuais e disseminação da cultura de
-              qualidade nos times.
+              <strong className="font-normal text-foreground">
+                Para quem está tirando uma ideia do papel
+              </strong>
+              , significa desenvolvimento conduzido por um especialista em qualidade, com
+              tranquilidade também depois da entrega. Projetos que nascem bem elaborados,
+              acessíveis, seguros e fáceis de manter, porque são pensados desde o início por quem
+              sabe onde o software costuma quebrar.
             </p>
           </div>
         </div>
       </section>
 
+      <PorQueQaSection />
+
+      <DivisorSecao numero="03" nome="Expertise" />
+
       <div className="relative">
         <FibraCarbono />
         {/* EXPERTISE */}
-        <section id="expertise" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 sm:px-6">
-          <Eyebrow>Expertise</Eyebrow>
-          <h2 className="luz-passando mt-6 w-fit text-4xl sm:text-5xl">O que é entregue</h2>
+        <section
+          id="expertise"
+          className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 max-md:py-14 sm:px-6"
+        >
+          <h2 className="luz-passando w-fit text-4xl sm:text-5xl">
+            Qualidade na <em className="text-chrome">prática</em>
+          </h2>
           <div className="mt-14 grid gap-5 sm:grid-cols-2">
             {EXPERTISE.map(({ icon: Icon, title, text }) => (
               <article
@@ -277,22 +282,28 @@ function Index() {
         </section>
       </div>
 
+      <DivisorSecao numero="04" nome="Método" />
+
       <div className="relative">
         <GradeTelemetria />
         <MetodoSections />
       </div>
 
-      <div className="relative pt-16">
+      <DivisorSecao numero="05" nome="Trajetória" />
+
+      <div className="relative pt-16 max-md:pt-0">
         <LinhaPista />
         {/* TRAJETÓRIA */}
-        <section id="trajetoria" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 sm:px-6">
-          <Eyebrow>Trajetória</Eyebrow>
-          <h2 className="luz-passando mt-6 w-fit text-4xl sm:text-5xl">Experiência</h2>
+        <section
+          id="trajetoria"
+          className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 max-md:py-14 sm:px-6"
+        >
+          <h2 className="luz-passando w-fit text-4xl sm:text-5xl">Experiência</h2>
           <ol className="relative mt-14 space-y-14 border-l border-white/10 pl-8 sm:pl-12">
             {EXPERIENCE.map((job) => (
               <li key={job.company} className="relative">
                 <span className="absolute -left-[37px] top-2 h-2.5 w-2.5 rounded-full bg-silver shadow-[0_0_12px_oklch(0.85_0.01_250/0.8)] sm:-left-[53px]" />
-                <h3 className="font-serif text-3xl text-chrome">{job.company}</h3>
+                <h3 className="font-serif text-3xl text-chrome lining-nums">{job.company}</h3>
                 <div className="mt-2 space-y-1">
                   {job.roles.map((r) => (
                     <p
@@ -300,7 +311,6 @@ function Index() {
                       className="flex flex-wrap items-baseline gap-x-3 text-sm uppercase tracking-[0.15em]"
                     >
                       <span className="text-foreground">{r.title}</span>
-                      <span className="text-muted-foreground">{r.period}</span>
                     </p>
                   ))}
                 </div>
@@ -318,40 +328,10 @@ function Index() {
         </section>
       </div>
 
-      {/* STACK + FORMAÇÃO */}
-      <section className="mx-auto grid max-w-6xl gap-5 px-4 pb-28 sm:px-6 md:grid-cols-[1.6fr_1fr]">
-        <div className="card-chrome rounded-2xl p-8">
-          <div className="flex items-center gap-3">
-            <GaugeCircle className="h-5 w-5 text-silver" strokeWidth={1.25} />
-            <h3 className="text-sm uppercase tracking-[0.25em] text-foreground">Ferramentas</h3>
-          </div>
-          <ul className="mt-6 flex flex-wrap gap-2.5">
-            {STACK.map((s) => (
-              <li
-                key={s}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-sm text-muted-foreground"
-              >
-                {s}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="card-chrome rounded-2xl p-8">
-          <div className="flex items-center gap-3">
-            <GraduationCap className="h-5 w-5 text-silver" strokeWidth={1.25} />
-            <h3 className="text-sm uppercase tracking-[0.25em] text-foreground">Formação</h3>
-          </div>
-          <p className="mt-6 font-serif text-2xl text-foreground">
-            Análise e Desenvolvimento de Sistemas
-          </p>
-          <p className="mt-2 text-sm uppercase tracking-[0.15em] text-muted-foreground">
-            UniCesumar · 2017 — 2020
-          </p>
-        </div>
-      </section>
+      <DivisorSecao numero="06" nome="Contato" />
 
       {/* CONTATO */}
-      <section id="contato" className="scroll-mt-20 px-4 pb-28 sm:px-6">
+      <section id="contato" className="scroll-mt-20 px-4 pb-28 max-md:py-14 sm:px-6">
         <div className="card-chrome relative isolate mx-auto max-w-4xl overflow-hidden rounded-[2rem] px-6 py-16 text-center sm:px-16">
           {/* Glow radial suave atrás do título, fechando a página */}
           <div
@@ -359,13 +339,21 @@ function Index() {
             className="pointer-events-none absolute left-1/2 top-[42%] -z-10 h-[460px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(225,232,242,0.13),rgba(225,232,242,0.04)_55%,transparent)]"
           />
           <div className="sheen absolute inset-0" />
-          <Eyebrow center>Contato</Eyebrow>
-          <h2 className="luz-passando mx-auto mt-6 w-fit text-4xl sm:text-6xl">
-            Vamos elevar o <span className="text-chrome">padrão</span> de qualidade?
+          <h2 className="luz-passando mx-auto w-fit text-4xl sm:text-6xl">
+            Vamos construir algo com <em className="text-chrome">qualidade</em>?
           </h2>
-          <p className="mx-auto mt-6 max-w-xl font-light text-muted-foreground">
-            Aberto a conversas sobre Quality Engineering, liderança de QA e IA aplicada a testes.
-          </p>
+          {/* Os dois públicos, na mesma divisão do Sobre */}
+          <div className="mx-auto mt-10 grid max-w-3xl gap-6 font-light leading-relaxed text-muted-foreground sm:grid-cols-2 sm:gap-10">
+            <p>
+              <strong className="font-normal text-foreground">Para times:</strong> estruturar ou
+              elevar a qualidade do que já está em produção.
+            </p>
+            <p>
+              <strong className="font-normal text-foreground">Para quem tem uma ideia:</strong>{" "}
+              tirar o projeto do papel com quem sabe onde o software costuma quebrar, do primeiro
+              rascunho à publicação.
+            </p>
+          </div>
           <a
             href={LINKEDIN_URL}
             target="_blank"
