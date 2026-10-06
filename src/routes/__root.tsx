@@ -31,6 +31,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "robots", content: "index,follow" },
       { httpEquiv: "content-language", content: "pt-BR" },
+      { name: "google-site-verification", content: "ItbFqH4UpTqJ4gNB23rKE9Ay8s-EFYBEeHbG4iaBRnw" },
     ],
     links: [
       {
