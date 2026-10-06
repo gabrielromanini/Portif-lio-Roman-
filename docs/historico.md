@@ -115,7 +115,6 @@ Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
 - **Imagem de compartilhamento** (`og:image`) e domínio: inexistentes.
 - **Modais com 3 tópicos** (Quality Gates e Qualidade colaborativa): sobra um espaço vazio na grade de 2 colunas. Falta um 4º tópico para cada.
 - **Expertise × Pilares:** a seção Expertise repete parte dos pilares. Avaliar se sai.
-- **Título "O que é entregue"** (Expertise): sugerido trocar por "Especialidades".
 - **Reflexo do card de Contato:** ficou; perguntar se sai, como saiu o da foto.
 - **Bloco "Produção"** dos quality gates: ainda prata; avaliar se fica grafite como os botões.
 - **Métricas e heurísticas do Método:** só o churn rate veio do currículo; o resto foi sugerido. Se houver números reais de antes e depois, vale destacar.

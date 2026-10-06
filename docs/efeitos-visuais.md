@@ -2,7 +2,7 @@
 
 Referência de **como funciona** cada efeito do site e **onde ajustar**. O histórico de decisões (o que foi pedido, testado, descartado e o que está pendente) fica em [historico.md](historico.md).
 
-Estado: 05/10/2026, ainda não publicado.
+Estado: 07/10/2026, publicado na Netlify a partir do GitHub.
 
 ---
 
@@ -10,7 +10,7 @@ Estado: 05/10/2026, ainda não publicado.
 
 O site é **uma página só** (`src/routes/index.tsx`). Todo link do menu e dos pilares apenas rola até a seção (`#pilares`, `#metodo`…).
 
-**Ordem:** Menu → Topo (nome + foto) → Pilares → Sobre → Por que um QA → Expertise → Método (5 abas) → Trajetória → Contato → Rodapé.
+**Ordem:** Menu → Topo (nome + foto) → Pilares → Sobre → Por que um QA → Expertise → Método (6 abas) → Trajetória → Contato → Rodapé.
 
 | Onde | Efeito | Arquivo principal |
 |---|---|---|
