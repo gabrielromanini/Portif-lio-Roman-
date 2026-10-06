@@ -38,7 +38,7 @@ site-gabriel/
 │   ├── lib/site.ts          ← nome e link do LinkedIn
 │   ├── assets/              ← foto, logo e fundo do topo
 │   └── styles.css           ← cores, fontes e todos os efeitos (cromado, aço escovado, luz…)
-├── public/                  ← favicon (ainda o da Yole)
+├── public/                  ← favicon e ícones (monograma GR)
 └── docs/                    ← efeitos-visuais.md (como funciona) e historico.md (decisões e pendências)
 ```
 

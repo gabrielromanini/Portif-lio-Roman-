@@ -107,7 +107,6 @@ Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
 
 - **Domínio próprio:** ainda não configurado (o site fica no endereço `.netlify.app`).
 - **Link do GitHub no site:** vai entrar depois.
-- **Ícone da aba (favicon):** ainda é o da Yole. Gerar a partir do monograma GR.
 - **Logo pesada:** `logo-gr.png` tem 545 KB para aparecer com 40 px de altura. Gerar uma versão leve.
 - **Arquivos sem uso em `src/assets/`:**
   - `pilares.png` (1 MB, referência do contorno dos cards);

@@ -113,13 +113,13 @@ const EXPERIENCE = [
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${SITE_NAME} | Quality Engineering & QA Lead` },
+      { title: `${SITE_NAME} · Engenharia de Software & Qualidade` },
       {
         name: "description",
         content:
           "Gabriel Romanini: mais de 8 anos em Qualidade de Software, Quality Engineering, automação E2E com Cypress e Playwright, e IA aplicada à engenharia de testes.",
       },
-      { property: "og:title", content: `${SITE_NAME} | Quality Engineering & QA Lead` },
+      { property: "og:title", content: `${SITE_NAME} · Engenharia de Software & Qualidade` },
       {
         property: "og:description",
         content: "Quality Engineering, automação E2E e IA aplicada à engenharia de testes.",
