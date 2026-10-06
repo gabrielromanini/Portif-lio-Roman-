@@ -9,6 +9,15 @@ Registro do que foi pedido, o que foi feito, **o que foi testado e descartado** 
 
 ---
 
+## 07/10/2026: deploy na Netlify
+
+- O deploy publicava, mas mostrava "Page not found": o template do Lovable era preparado para a Cloudflare.
+- Instalado o plugin oficial `@netlify/vite-plugin-tanstack-start` (documentação da Netlify para TanStack Start) e removido o `@cloudflare/vite-plugin`, que nem era usado pela versão atual do `@lovable.dev/vite-tanstack-config`. Essa versão usa o Nitro com preset da Cloudflare só dentro do Lovable; ficou desligado com `nitro: false`.
+- Criado o `netlify.toml` (build `npm run build`, publish `dist/client`, Node 22). `.netlify` no `.gitignore`.
+- `npm run build` testado: gera `dist/client/index.html` pré-renderizado e a função `.netlify/v1/functions/server.mjs`. O `npm run dev` continua funcionando. Nada visual mudou.
+
+---
+
 ## 06/10/2026: títulos de seção mais limpos
 
 - Removidos os rótulos pequenos acima dos títulos (Pilares, Sobre, Expertise, Método e as 9 partes dele, Trajetória, Contato). O título grande de cada seção ficou sozinho.
@@ -96,8 +105,8 @@ Ponto de partida: commit `d3d5c42`, cópia do site da psicóloga Yole Lopes.
 
 - **Contato direto:** hoje só há LinkedIn. Para vender projetos, um botão de e-mail ou WhatsApp ao lado tende a converter mais. Falta definir qual contato expor.
 
-- **Salvar no git:** nada do dia foi commitado ainda. Também não há repositório remoto (GitHub) nem hospedagem configurados.
-- **GitHub:** o link vai entrar no site depois.
+- **Domínio próprio:** ainda não configurado (o site fica no endereço `.netlify.app`).
+- **Link do GitHub no site:** vai entrar depois.
 - **Ícone da aba (favicon):** ainda é o da Yole. Gerar a partir do monograma GR.
 - **Logo pesada:** `logo-gr.png` tem 545 KB para aparecer com 40 px de altura. Gerar uma versão leve.
 - **Arquivos sem uso em `src/assets/`:**

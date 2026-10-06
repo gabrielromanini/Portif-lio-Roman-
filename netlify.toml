@@ -1,0 +1,9 @@
+# Deploy na Netlify (TanStack Start + @netlify/vite-plugin-tanstack-start).
+# Com este arquivo, os campos "Build command" e "Publish directory" do painel
+# da Netlify são preenchidos automaticamente.
+[build]
+  command = "npm run build"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "22"

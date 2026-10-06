@@ -4,7 +4,7 @@ Landing page pessoal (portfólio) de Gabriel Romanini, Software Quality Engineer
 
 Visual preto e prata, inspirado em Mercedes-AMG / F1, com um único acento verde-petróleo (#00A19C).
 
-Ainda não publicado: o projeto roda só localmente (ver [Pendências](docs/historico.md#pendências)).
+Hospedagem: **Netlify**, com deploy a partir do repositório no GitHub (ver [Publicar](#publicar-na-netlify)).
 
 ---
 
@@ -15,6 +15,7 @@ Ainda não publicado: o projeto roda só localmente (ver [Pendências](docs/hist
 - **TanStack Start** (Vite): bundler, roteamento e pré-renderização (SSR)
 - **Radix UI**: o modal dos pilares
 - **lucide-react**: ícones
+- **@netlify/vite-plugin-tanstack-start**: adapta o build para a Netlify
 - **sharp** (já vem nas dependências): usado para converter e redimensionar imagens
 
 O projeto começou como cópia do site da psicóloga Yole Lopes. Tudo o que era dela (páginas, componentes, imagens, analytics) foi removido em 05/10/2026.
@@ -91,3 +92,21 @@ node -e "require('sharp')('src/assets/BG.png').resize(3840).webp({quality:85}).t
 ```
 
 O preto some sozinho no site (`mix-blend-mode: screen`), então não precisa remover o fundo.
+
+---
+
+## Publicar na Netlify
+
+O projeto usa o plugin oficial `@netlify/vite-plugin-tanstack-start` (em `vite.config.ts`). O Nitro do Lovable, que gerava o build para a Cloudflare, fica desligado (`nitro: false`).
+
+O `netlify.toml` já define tudo:
+
+| Campo na Netlify | Valor |
+|---|---|
+| Build command | `npm run build` |
+| Publish directory | `dist/client` |
+| Node | 22 |
+
+O build gera a página pré-renderizada em `dist/client` e a função do servidor em `.netlify/v1/functions/` (a Netlify pega essa pasta sozinha).
+
+Com o repositório ligado à Netlify, cada `git push` na `main` publica o site.
