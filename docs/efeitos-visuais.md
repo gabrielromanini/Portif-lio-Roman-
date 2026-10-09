@@ -36,6 +36,8 @@ Algumas regras que valem para o site todo:
 
 O Lenis faz a rolagem suave e roda no mesmo relógio do GSAP, para que as animações presas à rolagem andem no mesmo quadro que a página. Com movimento reduzido, o Lenis não liga.
 
+Os links internos (menu, logo, "Ver trajetória") não passam pelo navegador: `useEnderecoLimpo`, em `Layout.tsx`, faz a rolagem até a seção e não escreve o `#sobre` no endereço, que fica sempre `gabrielromanini.com.br`. Quem abre um link recebido com `#seção` continua indo direto para ela. O `<head>` tem o `canonical` apontando para o endereço oficial (`SITE_URL`, em `src/lib/site.ts`).
+
 O `__root.tsx` põe a classe `js` no `<html>` antes da primeira pintura. O CSS usa essa classe para escolher entre a versão animada e a estática, então a página já nasce com a altura certa e não pula ao carregar.
 
 ## Pilares (`Pilares.tsx`)

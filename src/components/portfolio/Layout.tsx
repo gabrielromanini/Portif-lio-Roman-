@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState, type RefObject } from "react";
 import logoGr from "@/assets/logo-gr.webp";
-import { ligarRolagemSuave } from "@/lib/rolagem";
+import { ligarRolagemSuave, rolarAte } from "@/lib/rolagem";
 import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
 import { Profundidade } from "./Profundidade";
 
@@ -121,6 +121,38 @@ function useMenuAoRolar() {
  * (.card-chrome.bloom, dentro de um @media até 767px), então no desktop a
  * classe não tem efeito.
  */
+/**
+ * Endereço limpo: os links internos (menu, logo, "Ver trajetória"…) rolam até a
+ * seção sem escrever "#sobre" no endereço, que fica sempre gabrielromanini.com.br.
+ * A rolagem é feita aqui (pelo Lenis, ou direta com movimento reduzido), respeitando
+ * o scroll-margin de cada seção; o logo (#top) volta ao início da página.
+ * Links recebidos com #seção continuam funcionando ao abrir o site.
+ */
+function useEnderecoLimpo() {
+  useEffect(() => {
+    function aoClicar(e: MouseEvent) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const a = (e.target as HTMLElement).closest?.("a");
+      const href = a?.getAttribute("href");
+      if (!href?.startsWith("#")) return;
+      const alvo = href === "#top" ? null : document.getElementById(href.slice(1));
+      if (href !== "#top" && !alvo) return;
+      e.preventDefault();
+      const y = alvo
+        ? alvo.getBoundingClientRect().top +
+          window.scrollY -
+          (parseFloat(getComputedStyle(alvo).scrollMarginTop) || 0)
+        : 0;
+      rolarAte(Math.max(0, y));
+      if (window.location.hash) {
+        history.replaceState(history.state, "", window.location.pathname + window.location.search);
+      }
+    }
+    document.addEventListener("click", aoClicar);
+    return () => document.removeEventListener("click", aoClicar);
+  }, []);
+}
+
 function useBloomNosCards() {
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -248,6 +280,7 @@ function MenuMobile({
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   useEffect(() => ligarRolagemSuave(), []);
+  useEnderecoLimpo();
   useAlinharLuzDosTitulos();
   const { rolado, ativo, barraRef } = useMenuAoRolar();
   const [menuAberto, setMenuAberto] = useState(false);

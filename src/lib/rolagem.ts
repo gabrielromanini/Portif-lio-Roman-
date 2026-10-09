@@ -7,6 +7,17 @@ gsap.registerPlugin(ScrollTrigger);
 
 export { gsap, ScrollTrigger };
 
+let instancia: Lenis | null = null;
+
+/**
+ * Rola até `y` (px do topo da página): suave pelo Lenis quando ele está ligado;
+ * direto com movimento reduzido.
+ */
+export function rolarAte(y: number) {
+  if (instancia) instancia.scrollTo(y);
+  else window.scrollTo({ top: y, behavior: "auto" });
+}
+
 /**
  * Rolagem suave (Lenis) ligada ao relógio do GSAP, para que as animações presas
  * ao scroll (ScrollTrigger) andem no mesmo quadro que a página.
@@ -15,8 +26,10 @@ export { gsap, ScrollTrigger };
 export function ligarRolagemSuave() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
 
-  // `anchors`: links "#secao" rolam pelo Lenis, respeitando o scroll-mt das seções.
-  const lenis = new Lenis({ anchors: true, lerp: 0.1 });
+  // Os links "#secao" não passam pelo Lenis: quem trata é useEnderecoLimpo (Layout.tsx),
+  // que rola por rolarAte e mantém o endereço sem o #.
+  const lenis = new Lenis({ lerp: 0.1 });
+  instancia = lenis;
   const quadro = (tempo: number) => lenis.raf(tempo * 1000);
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(quadro);
@@ -25,5 +38,6 @@ export function ligarRolagemSuave() {
   return () => {
     gsap.ticker.remove(quadro);
     lenis.destroy();
+    instancia = null;
   };
 }

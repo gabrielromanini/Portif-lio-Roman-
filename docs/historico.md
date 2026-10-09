@@ -21,6 +21,8 @@ O que ficou:
 - A seção "Por que um QA" virou "O que eu levo para o seu time", com textos escritos pelo Gabriel em primeira pessoa.
 - Fundo da página com névoa em duas camadas (parallax) e grão de filme (`Profundidade.tsx`).
 - O topo ganhou o fundo "Silver Arrow" atrás do menu também, o que tirou uma faixa preta que aparecia ali.
+- Endereço sempre limpo (`gabrielromanini.com.br`, sem `#sobre` ao navegar pelo menu) e `canonical` no `<head>`. Links com `#seção` recebidos de fora continuam funcionando.
+- Barra dos Pilares em tablets (768 a 1100px) vira o contador, porque os sete nomes não cabiam.
 - Logo convertida para WebP (`logo-gr.webp`, 6 KB no lugar dos 545 KB do PNG).
 - Saíram as texturas de fundo da Expertise (fibra de carbono) e do Método (grade de telemetria), e os divisores numerados do celular ("01 · Pilares" etc.).
 - Expertise: "cultura de qualidade no time" virou "cultura de qualidade".
@@ -65,7 +67,7 @@ Coisas testadas que não ficaram nessa fase: números de destaque abaixo do topo
 - Ferramentas dos pilares Engenharia, Shift Left, Testes funcionais e Colaboração. Hoje o grupo "Ferramentas" não aparece neles.
 - Testar a cena 3D (colunas e pirâmide) no Safari, num Mac ou iPhone. O WebKit do Playwright no Windows não renderiza 3D.
 - Contato direto: só há LinkedIn. Um botão de e-mail ou WhatsApp tende a converter mais, falta decidir qual.
-- Domínio próprio, imagem de compartilhamento (`og:image`) e link do GitHub no site.
+- Imagem de compartilhamento (`og:image`) e link do GitHub no site.
 - Arquivos sem uso em `src/assets/`: `logo-gr.png` (substituído pelo WebP), `pilares.png` e `BG.png` (original do fundo de traçados, mantido para gerar a versão leve).
 - Expertise repete parte dos pilares; avaliar se continua.
 - Métricas e heurísticas do Método: só o churn rate veio do currículo. Se houver números reais de antes e depois, vale destacar.

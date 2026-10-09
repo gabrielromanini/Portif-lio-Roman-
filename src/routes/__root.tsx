@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { SITE_URL } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -32,6 +33,7 @@ export const Route = createRootRoute({
       { name: "robots", content: "index,follow" },
       { httpEquiv: "content-language", content: "pt-BR" },
       { name: "google-site-verification", content: "ItbFqH4UpTqJ4gNB23rKE9Ay8s-EFYBEeHbG4iaBRnw" },
+      { property: "og:url", content: SITE_URL },
     ],
     links: [
       {
@@ -41,6 +43,8 @@ export const Route = createRootRoute({
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      // Endereço oficial para o Google (sem #seção nem variações)
+      { rel: "canonical", href: SITE_URL },
     ],
   }),
   shellComponent: RootShell,
