@@ -1,6 +1,8 @@
 import { forwardRef, useEffect, useRef, useState, type RefObject } from "react";
-import logoGr from "@/assets/logo-gr.png";
+import logoGr from "@/assets/logo-gr.webp";
+import { ligarRolagemSuave } from "@/lib/rolagem";
 import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
+import { Profundidade } from "./Profundidade";
 
 // Links do menu: todos levam a seções da própria landing page.
 const NAV = [
@@ -245,6 +247,7 @@ function MenuMobile({
 }
 
 export function PageShell({ children }: { children: React.ReactNode }) {
+  useEffect(() => ligarRolagemSuave(), []);
   useAlinharLuzDosTitulos();
   const { rolado, ativo, barraRef } = useMenuAoRolar();
   const [menuAberto, setMenuAberto] = useState(false);
@@ -256,7 +259,9 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     // overflow-x-clip (e não hidden): hidden transformaria este div num contêiner de
     // rolagem e o menu deixaria de ficar preso no topo (sticky).
     <div className="relative min-h-screen overflow-x-clip">
-      {/* Reflexos de luz no fundo */}
+      {/* Profundidade do fundo: névoa em parallax e grão de filme */}
+      <Profundidade />
+      {/* Reflexos de luz no topo */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.75_0.01_250/0.16),transparent_65%)]" />
         <div className="absolute top-[900px] -right-40 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,oklch(0.7_0.02_250/0.08),transparent_65%)]" />
@@ -275,7 +280,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           }`}
         >
           <a href="#top" aria-label={`${SITE_NAME}, página inicial`}>
-            <img src={logoGr} alt="" width={1269} height={1240} className="h-10 w-auto" />
+            <img src={logoGr} alt="" width={123} height={120} className="h-10 w-auto" />
           </a>
           <nav className="hidden gap-8 md:flex">
             {NAV.map((n) => {

@@ -347,6 +347,10 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Com o Lenis ligado, ele faz a rolagem suave; a do CSS brigaria com ele */
+  html.lenis {
+    scroll-behavior: auto;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -548,6 +552,23 @@
       transform 0.3s ease,
       box-shadow 0.3s ease;
   }
+  /* Pilares: o mesmo card em vidro, para o bloom do fundo aparecer desfocado atrás.
+     Mesmo tom do .card-chrome, só com mais transparência. Nenhum ancestral pode ter
+     opacity < 1, filter ou mask, senão o backdrop-filter para de funcionar. */
+  .card-chrome.card-vidro {
+    background:
+      linear-gradient(160deg, oklch(0.2 0.004 250 / 0.6), oklch(0.15 0.003 250 / 0.6)) padding-box,
+      linear-gradient(
+          140deg,
+          rgba(255, 255, 255, 0.28),
+          rgba(255, 255, 255, 0.04) 40%,
+          rgba(255, 255, 255, 0.16)
+        )
+        border-box;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
   /* Cards clicáveis/interativos (com "group"): ao passar o mouse, acendem com
      o verde-petróleo, igual aos botões. */
   .card-chrome.group:hover {
@@ -587,47 +608,6 @@
 }
 
 /* ——— Fundos das seções ——— */
-
-/* Expertise: fibra de carbono (padrão sarja), quase invisível */
-.fibra-carbono {
-  opacity: 0.03;
-  background:
-    linear-gradient(27deg, rgba(255, 255, 255, 0.35) 5px, transparent 5px) 0 5px,
-    linear-gradient(207deg, rgba(255, 255, 255, 0.35) 5px, transparent 5px) 10px 0,
-    linear-gradient(27deg, rgba(255, 255, 255, 0.7) 5px, transparent 5px) 0 10px,
-    linear-gradient(207deg, rgba(255, 255, 255, 0.7) 5px, transparent 5px) 10px 5px,
-    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 10px, transparent 10px),
-    linear-gradient(
-      rgba(255, 255, 255, 0.5) 25%,
-      rgba(255, 255, 255, 0.4) 25%,
-      rgba(255, 255, 255, 0.4) 50%,
-      transparent 50%,
-      transparent 75%,
-      rgba(255, 255, 255, 0.8) 75%,
-      rgba(255, 255, 255, 0.8)
-    );
-  background-size: 20px 20px;
-  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
-}
-
-/* Método: grade de telemetria (linhas finas a cada 32px, mais marcadas a cada 160px) */
-.grade-telemetria {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size:
-    32px 32px,
-    32px 32px,
-    160px 160px,
-    160px 160px;
-  background-position: center top;
-  mask-image:
-    linear-gradient(to bottom, transparent, black 6%, black 94%, transparent),
-    linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  mask-composite: intersect;
-}
 
 /* ——— Só no celular (até 767px). Nada aqui afeta o desktop. ——— */
 @media (max-width: 767.98px) {
@@ -839,4 +819,736 @@
   .group:hover .sheen-hover::after {
     animation: none;
   }
+}
+
+/* ——— Pilares: carrossel com colunas de vidro ao fundo (Pilares.tsx) ———
+   A coluna acesa acompanha o carrossel (--ativo, posto pelo React) e a câmera gira
+   de leve na direção dela. Profundidade por névoa e transparência, sem silhuetas
+   duras. Texto em branco, prata e cinza; verde-petróleo só em detalhes. Fora de
+   @layer de propósito, para valer sobre os utilitários do Tailwind. */
+.pc {
+  --H: min(calc((100svh - 54px) * 0.36), 28vw);
+  --W: calc(var(--H) * 0.17);
+  --E: calc(var(--W) * 1.85);
+  --ativo: 0;
+  position: relative;
+}
+.pc-palco {
+  position: relative;
+  height: calc(100svh - 54px);
+  min-height: 680px;
+  overflow: hidden;
+}
+.pc-fundo,
+.pc-fundo-preso {
+  position: absolute;
+  inset: 0;
+}
+/* Tudo da cena some suavemente em cima e embaixo (sem corte seco na dobra) */
+.pc-particulas,
+.pc-cena,
+.pc-chao {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+}
+.pc-particulas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.pc-cena {
+  position: absolute;
+  inset: 0;
+  perspective: 1700px;
+  perspective-origin: 72% 45%;
+}
+.pc-camera {
+  position: absolute;
+  left: 72%;
+  top: 74%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(-13deg) rotateY(calc(-18deg + var(--ativo) * 6deg));
+  transition: transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* A cena "respira": deriva lenta de ±2° enquanto a seção está na tela */
+.pc-respira {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: pc-respira 10s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.pc[data-visivel] .pc-respira {
+  animation-play-state: running;
+}
+@keyframes pc-respira {
+  from {
+    transform: rotateY(-2deg);
+  }
+  to {
+    transform: rotateY(2deg);
+  }
+}
+/* Caixa de 5 faces: a base fica na origem do pai */
+.cx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--bw);
+  height: var(--bh);
+  margin-left: calc(var(--bw) / -2);
+  margin-top: calc(var(--bh) * -1);
+  transform-style: preserve-3d;
+}
+.cx > i {
+  position: absolute;
+  display: block;
+  border: 1px solid rgba(0, 210, 190, 0.14);
+  background:
+    radial-gradient(circle at 5px 6px, rgba(0, 163, 154, 0.35) 0 0.8px, transparent 1.4px) 0 0 /
+      18px 18px,
+    linear-gradient(180deg, rgba(225, 245, 243, 0.05), rgba(0, 163, 154, 0.03));
+  opacity: var(--op, 1);
+  /* A coluna que apaga leva 900ms */
+  transition:
+    border-color 0.9s ease,
+    box-shadow 0.9s ease,
+    opacity 0.9s ease;
+}
+.cx-f,
+.cx-t {
+  inset: 0;
+}
+.cx-f {
+  transform: translateZ(calc(var(--bd) / 2));
+}
+.cx-t {
+  transform: rotateY(180deg) translateZ(calc(var(--bd) / 2));
+}
+.cx-e,
+.cx-d {
+  top: 0;
+  height: 100%;
+  width: var(--bd);
+  left: calc((var(--bw) - var(--bd)) / 2);
+}
+.cx-e {
+  transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2));
+}
+.cx-d {
+  transform: rotateY(90deg) translateZ(calc(var(--bw) / 2));
+}
+.cx-s {
+  left: 0;
+  width: 100%;
+  height: var(--bd);
+  top: calc((var(--bh) - var(--bd)) / 2);
+  transform: rotateX(90deg) translateZ(calc(var(--bh) / 2));
+}
+.pc-piso {
+  position: absolute;
+  width: calc(var(--E) * 18);
+  height: calc(var(--E) * 18);
+  left: calc(var(--E) * -9);
+  top: calc(var(--E) * -9);
+  transform: rotateX(90deg);
+  background-image:
+    linear-gradient(rgba(0, 210, 190, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 210, 190, 0.07) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: center;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 25%, transparent);
+  mask-image: radial-gradient(circle closest-side, #000 25%, transparent);
+}
+.pc-coluna,
+.pc-ergue,
+.pc-topo,
+.pc-viga,
+.pc-fantasmas,
+.pc-fantasma {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+.pc-coluna {
+  --op: 0.22;
+  transform: translateX(calc((var(--i) - 3) * var(--E)));
+}
+.pc-coluna[data-ativo] {
+  --op: 1;
+}
+/* A coluna que acende leva 700ms */
+.pc-coluna[data-ativo] .cx > i {
+  border-color: rgba(0, 210, 190, 0.6);
+  box-shadow: inset 0 0 22px rgba(0, 210, 190, 0.14);
+  transition-duration: 0.7s;
+}
+.pc-coluna[data-ativo] .cx-f {
+  box-shadow:
+    inset 0 0 22px rgba(0, 210, 190, 0.14),
+    0 0 30px rgba(0, 210, 190, 0.22);
+}
+.pc-ergue {
+  transform: translateY(calc(var(--W) * -0.3));
+}
+.pc-topo {
+  transform: translateY(calc(var(--H) * -1));
+}
+.pc-ancora {
+  position: absolute;
+  left: 0;
+  top: calc(var(--W) * -0.85 - 14px);
+  width: 1px;
+  height: 1px;
+}
+.pc-viga {
+  --op: 0.4;
+  transform: translateY(calc(var(--W) * -0.6 - var(--H)));
+}
+/* Fileiras-fantasma: só um gradiente leve que some para cima, sem preenchimento
+   escuro nem borda (nada de silhueta dura) */
+.pc-fantasmas {
+  transform: translateZ(calc(var(--z) * var(--E) * -1));
+}
+.pc-fantasmas-1 {
+  --op: 0.18;
+}
+.pc-fantasmas-2 {
+  --op: 0.08;
+}
+.pc-fantasma {
+  transform: translateX(calc(var(--j) * var(--E)));
+}
+.pc-fantasmas .cx > i {
+  border: 0;
+  background: linear-gradient(
+    to top,
+    rgba(170, 225, 220, 0.16),
+    rgba(170, 225, 220, 0.06) 35%,
+    transparent 90%
+  );
+}
+/* Chão de luz verde-água, bem difuso, sob as colunas */
+.pc-chao {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 38% 22% at 72% 76%,
+    rgba(0, 210, 190, 0.12),
+    rgba(0, 210, 190, 0.04) 55%,
+    transparent 80%
+  );
+}
+/* Névoa: no horizonte e no topo, e vinheta só nas laterais (sem bordas duras) */
+.pc-nevoa {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 58%,
+      rgba(12, 20, 20, 0.35) 76%,
+      rgba(12, 20, 20, 0.2) 84%,
+      transparent
+    ),
+    linear-gradient(to bottom, rgba(4, 6, 6, 0.45), transparent 32%),
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.35),
+      transparent 18%,
+      transparent 82%,
+      rgba(0, 0, 0, 0.35)
+    );
+}
+/* Número sobre a coluna ativa */
+.pc-marca {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(220, 230, 230, 0.8);
+  pointer-events: none;
+}
+
+/* ——— Texto ——— */
+.pc-texto {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.55);
+}
+/* Véu escuro atrás do texto: radial grande que chega a transparent bem antes das
+   bordas do elemento (nenhuma borda perceptível) */
+.pc-texto::before {
+  content: "";
+  position: absolute;
+  inset: -40% -55%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(4, 6, 6, 0.8),
+    rgba(4, 6, 6, 0.4) 55%,
+    transparent 78%
+  );
+}
+.pc-h2 {
+  font-size: clamp(26px, 2.3vw, 38px);
+}
+.pc-titulo {
+  font-size: clamp(54px, 5.4vw, 92px);
+  line-height: 1;
+  color: #f2f4f5;
+}
+.pc-titulo em {
+  color: #b9c1c7;
+}
+.pc-descricao {
+  max-width: 42ch;
+  font-size: clamp(20px, 1.65vw, 25px);
+  line-height: 1.55;
+}
+.pc-grupos {
+  display: grid;
+  gap: 1.1rem;
+}
+.pc-rotulo {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.pc-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.pc-pills li {
+  padding: 5px 12px;
+  border: 1px solid rgba(205, 218, 218, 0.18);
+  border-radius: 999px;
+  font-size: 16px;
+  color: rgba(236, 240, 241, 0.88);
+  text-shadow: none;
+}
+.pc-paineis {
+  display: grid;
+  margin-top: 2rem;
+}
+.pc-painel {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  transition: visibility 0s linear 0.35s;
+}
+.pc-painel[data-ativo] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.pc-num {
+  display: none;
+}
+/* Troca de pilar: o que sai some (350ms, sobe 8px e desfoca); o que entra aparece
+   (550ms, de 10px abaixo, desfocado → nítido), com o título 60ms antes do resto */
+.pc-etapa {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(4px);
+  transition:
+    opacity 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.pc-painel:not([data-ativo]) .pc-etapa {
+  transition-delay: 0s;
+}
+.pc-painel[data-ativo] .pc-etapa {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition-duration: 0.55s;
+  transition-delay: 0.3s;
+  animation: pc-entra 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s backwards;
+}
+.pc-painel[data-ativo] .pc-titulo {
+  transition-delay: 0.24s;
+  animation-delay: 0.24s;
+}
+@keyframes pc-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+}
+
+/* ——— Navegação única, no rodapé do palco ——— */
+.pc-nav {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transform: translateX(-50%);
+}
+.pc-seta {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(236, 240, 241, 0.85);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.pc-seta:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+.pc-itens {
+  display: flex;
+  gap: 8px;
+}
+/* Cada opção é um botão em pílula; o ativo ganha fundo e um brilho verde-petróleo */
+.pc-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 11px 20px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.025);
+  white-space: nowrap;
+  color: rgba(225, 231, 233, 0.72);
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.pc-item:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+}
+.pc-item[aria-selected="true"] {
+  color: #fff;
+  border-color: rgba(0, 210, 190, 0.6);
+  background: rgba(0, 210, 190, 0.1);
+  box-shadow: 0 0 24px rgba(0, 210, 190, 0.22);
+}
+.pc-item-num {
+  display: none;
+}
+.pc-item-nome {
+  font-size: 16px;
+  font-weight: 500;
+}
+/* Linha fina sob o item ativo, que enche até o próximo pilar */
+.pc-item-linha {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 5px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.pc-item[aria-selected="true"] .pc-item-linha {
+  opacity: 1;
+}
+.pc-item-linha > i {
+  position: absolute;
+  inset: 0;
+  background: #e8edef;
+  transform-origin: left;
+}
+.pc-item-linha > i[data-correndo] {
+  background: #00d2be;
+  animation: pc-corre 7s linear both;
+}
+@keyframes pc-corre {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.pc-item:focus-visible,
+.pc-seta:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+.pc-contador {
+  display: none;
+}
+
+/* ——— Desktop ——— */
+@media (min-width: 768px) {
+  .pc-texto {
+    position: absolute;
+    left: 15vw;
+    top: 45%;
+    width: min(700px, 50vw);
+    transform: translateY(-50%);
+  }
+}
+/* Telas baixas (ex.: 1366x768): título e espaços limitados também pela altura */
+@media (min-width: 768px) and (max-height: 860px) {
+  .pc-titulo {
+    font-size: clamp(44px, min(5.4vw, 8.5svh), 92px);
+  }
+  .pc-descricao {
+    font-size: clamp(18px, min(1.65vw, 2.8svh), 25px);
+  }
+  .pc-paineis {
+    margin-top: 1.25rem;
+  }
+  .pc-grupos {
+    margin-top: 1.1rem;
+    gap: 0.8rem;
+  }
+}
+
+/* ——— Celular: os 7 pilares em cards (cascata), com as colunas presas ao fundo,
+   apagadas, acompanhando o card do meio da tela ——— */
+@media (max-width: 767.98px) {
+  .pc {
+    --H: min(calc(100svh * 0.34), 56vw);
+  }
+  .pc-palco {
+    height: auto;
+    min-height: 0;
+    /* clip (e não hidden), para o fundo preso (sticky) continuar funcionando */
+    overflow: clip;
+    padding: 2.5rem 1rem 3rem;
+  }
+  .pc-fundo-preso {
+    position: sticky;
+    top: 54px;
+    bottom: auto;
+    height: calc(100svh - 54px);
+    overflow: hidden;
+    opacity: 0.55;
+  }
+  .pc-cena {
+    perspective-origin: 50% 45%;
+  }
+  .pc-camera {
+    left: 50%;
+    top: 72%;
+  }
+  .pc-chao {
+    background: radial-gradient(
+      ellipse 60% 18% at 50% 74%,
+      rgba(0, 210, 190, 0.12),
+      transparent 80%
+    );
+  }
+  .pc-marca,
+  .pc-nav {
+    display: none;
+  }
+  .pc-texto {
+    isolation: auto;
+  }
+  .pc-texto::before {
+    display: none;
+  }
+  .pc-titulo {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+  .pc-descricao {
+    font-size: 16.5px;
+  }
+  .pc-pills li {
+    font-size: 13.5px;
+    padding: 4px 11px;
+  }
+  /* Cards em cascata, todos visíveis */
+  .pc-paineis {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 1.75rem;
+  }
+  .pc-painel {
+    visibility: visible;
+    padding: 22px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(8, 12, 13, 0.72);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    text-shadow: none;
+    transition: border-color 0.4s ease;
+  }
+  /* O card do meio da tela (o da coluna acesa) ganha a borda verde-petróleo */
+  .pc-painel[data-ativo] {
+    border-color: rgba(0, 210, 190, 0.5);
+  }
+  .pc-num {
+    display: block;
+  }
+  .pc-etapa,
+  .pc-painel[data-ativo] .pc-etapa {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-respira {
+    animation: none;
+  }
+  .pc-camera,
+  .cx > i,
+  .pc-etapa,
+  .pc-painel {
+    transition: none !important;
+    animation: none !important;
+  }
+  .pc-etapa {
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* Sem JS: os 7 pilares em lista, legíveis */
+html:not(.js) .pc-palco {
+  height: auto;
+  min-height: 0;
+  padding-bottom: 4rem;
+}
+html:not(.js) .pc-texto {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: auto;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4rem 1rem 0;
+  transform: none;
+}
+html:not(.js) .pc-paineis {
+  display: block;
+}
+html:not(.js) .pc-painel {
+  visibility: visible;
+  margin-top: 3rem;
+}
+html:not(.js) .pc-etapa {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+html:not(.js) .pc-num {
+  display: block;
+}
+html:not(.js) .pc-nav,
+html:not(.js) .pc-marca {
+  display: none;
+}
+
+/* ——— Pirâmide "Estratégia inteligente, menor custo": vidro fosco com partículas petróleo ———
+   Regra do vidro: nenhum ancestral das camadas pode ter opacity < 1, filter, mask ou
+   will-change: filter (viram "backdrop root" e o desfoque para de ver o fundo). */
+.piramide-vidro {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(225, 245, 243, 0.16), rgba(0, 163, 154, 0.07));
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .piramide-vidro {
+    background: rgba(20, 30, 30, 0.55);
+  }
+}
+/* Partículas: pontos em posições irregulares num tile de 56px (não parece grade),
+   mais densas na base e sumindo no topo de cada camada */
+.piramide-pontos {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 7px 11px, rgba(0, 210, 190, 0.9) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 31px 4px, rgba(0, 163, 154, 0.7) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 46px 23px, rgba(0, 210, 190, 0.6) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 19px 33px, rgba(0, 163, 154, 0.95) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle at 52px 47px, rgba(0, 210, 190, 0.8) 0 0.9px, transparent 1.5px),
+    radial-gradient(circle at 4px 50px, rgba(0, 163, 154, 0.5) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at 37px 40px, rgba(0, 210, 190, 0.55) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 26px 18px, rgba(0, 163, 154, 0.65) 0 1.3px, transparent 1.9px);
+  background-size: 56px 56px;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), #000 85%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), #000 85%);
+}
+/* Brilho atrás da pirâmide (irmão das camadas): acende no quality gate */
+.piramide-halo {
+  position: absolute;
+  inset: -4%;
+  filter: blur(28px);
+  opacity: 0;
+  pointer-events: none;
+}
+/* O recorte fica no filho: no mesmo elemento, o clip-path cortaria o próprio blur */
+.piramide-halo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: radial-gradient(ellipse at 50% 70%, rgba(0, 210, 190, 0.35), transparent 75%);
+}
+/* Sem JS ou com movimento reduzido, a pirâmide já aparece pronta e acesa */
+@media (prefers-reduced-motion: reduce) {
+  .piramide-halo {
+    opacity: 1;
+  }
+}
+html:not(.js) .piramide-halo {
+  opacity: 1;
+}
+.piramide-rotulo {
+  color: #eef7f6;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.85),
+    0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Grão de filme (Profundidade.tsx): ruído quase invisível sobre o fundo da página,
+   para o preto não ficar chapado. Gerado por SVG (feTurbulence), sem imagem externa. */
+.grao {
+  opacity: 0.065;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
 }

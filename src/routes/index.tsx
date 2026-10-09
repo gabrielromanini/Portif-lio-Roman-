@@ -12,15 +12,13 @@ import {
 } from "lucide-react";
 import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
 import { Eyebrow, FONTS_LINKS, PageShell } from "@/components/portfolio/Layout";
+import { CamadasSection } from "@/components/portfolio/Camadas";
 import { MetodoSections, PorQueQaSection } from "@/components/portfolio/Metodo";
 import { PilaresSection } from "@/components/portfolio/Pilares";
 import {
-  DivisorSecao,
   SilverArrowHero,
   TracadosHero,
   DiagonaisEspelhadas,
-  FibraCarbono,
-  GradeTelemetria,
   LinhaPista,
 } from "@/components/portfolio/Fundos";
 
@@ -32,7 +30,7 @@ const EXPERTISE = [
   {
     icon: ShieldCheck,
     title: "Quality Engineering",
-    text: "Software entregue com altíssima qualidade: estratégia de testes, cultura de qualidade no time e testes bem implementados, do planejamento à produção.",
+    text: "Software entregue com altíssima qualidade: estratégia de testes, cultura de qualidade e testes bem implementados, do planejamento à produção.",
   },
   {
     icon: Bot,
@@ -205,14 +203,15 @@ function Index() {
         </section>
       </div>
 
-      <DivisorSecao numero="01" nome="Pilares" />
-
       <div className="relative">
-        <DiagonaisEspelhadas />
+        {/* As linhas do topo descem só pela primeira tela: a seção dos Pilares agora é
+            um trilho alto, e esticadas por ele elas ficariam enormes */}
+        {/* Bem apagadas (8%), atrás das colunas: não cruzam a cena */}
+        <div className="absolute inset-x-0 top-0 h-[100svh] opacity-[0.08]">
+          <DiagonaisEspelhadas />
+        </div>
         <PilaresSection />
       </div>
-
-      <DivisorSecao numero="02" nome="Sobre" />
 
       {/* SOBRE */}
       <section
@@ -254,10 +253,7 @@ function Index() {
 
       <PorQueQaSection />
 
-      <DivisorSecao numero="03" nome="Expertise" />
-
       <div className="relative">
-        <FibraCarbono />
         {/* EXPERTISE */}
         <section
           id="expertise"
@@ -282,14 +278,11 @@ function Index() {
         </section>
       </div>
 
-      <DivisorSecao numero="04" nome="Método" />
-
       <div className="relative">
-        <GradeTelemetria />
         <MetodoSections />
       </div>
 
-      <DivisorSecao numero="05" nome="Trajetória" />
+      <CamadasSection />
 
       <div className="relative pt-16 max-md:pt-0">
         <LinhaPista />
@@ -327,8 +320,6 @@ function Index() {
           </ol>
         </section>
       </div>
-
-      <DivisorSecao numero="06" nome="Contato" />
 
       {/* CONTATO */}
       <section id="contato" className="scroll-mt-20 px-4 pb-28 max-md:py-14 sm:px-6">

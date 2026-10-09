@@ -38,7 +38,7 @@ export function SilverArrowHero() {
       aria-hidden
       // Desce 240px para dentro da seção seguinte e apaga nos últimos 320px:
       // assim o brilho petróleo não termina numa linha reta no fim do topo.
-      className="pointer-events-none absolute inset-x-0 top-0 -bottom-[240px] -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,black_calc(100%-320px),transparent)]"
+      className="pointer-events-none absolute inset-x-0 -top-16 -bottom-[240px] -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,black_calc(100%-320px),transparent)]"
     >
       {/* Base + aço escovado */}
       <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.018)_0_1px,transparent_1px_4px),linear-gradient(180deg,#0b0c0d,#060607)]" />
@@ -167,18 +167,6 @@ export function DiagonaisEspelhadas() {
   );
 }
 
-/** Expertise: textura de fibra de carbono quase invisível. */
-export function FibraCarbono() {
-  return <div aria-hidden className="fibra-carbono pointer-events-none absolute inset-0 -z-10" />;
-}
-
-/** Método: grade fina de telemetria, como um overlay de dados da F1. */
-export function GradeTelemetria() {
-  return (
-    <div aria-hidden className="grade-telemetria pointer-events-none absolute inset-0 -z-10" />
-  );
-}
-
 /** Trajetória: linha prata que "corre" pela tela quando a seção aparece, como uma volta de pista. */
 export function LinhaPista() {
   const ref = useRef<HTMLDivElement>(null);
@@ -208,48 +196,6 @@ export function LinhaPista() {
     >
       <span className="linha-pista-trilho" />
       <span className="linha-pista-carro" />
-    </div>
-  );
-}
-
-/**
- * Divisor entre seções, só no celular: linha prata com o centro em petróleo e,
- * por cima, o rótulo "01 · PILARES". A linha cresce do centro para as bordas na
- * primeira vez que aparece (com redução de movimento, já aparece pronta).
- */
-export function DivisorSecao({ numero, nome }: { numero: string; nome: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visto, setVisto] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        setVisto(true);
-        obs.disconnect();
-      }
-    });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none relative flex justify-center px-4 md:hidden"
-    >
-      <span
-        className={`absolute inset-x-4 top-1/2 h-px bg-[linear-gradient(90deg,transparent,rgba(220,220,220,0.2)_30%,#00a19c_50%,rgba(220,220,220,0.2)_70%,transparent)] transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:scale-x-100 motion-reduce:transition-none ${
-          visto ? "scale-x-100" : "scale-x-0"
-        }`}
-      />
-      {/* Fundo da cor da página "corta" a linha; o padding da esquerda compensa o
-          espaçamento que sobra depois da última letra */}
-      <span className="relative bg-background py-1 pl-[calc(12px+0.35em)] pr-3 text-[10px] uppercase leading-none tracking-[0.35em] text-[#8a8a8a] lining-nums">
-        {numero} · {nome}
-      </span>
     </div>
   );
 }

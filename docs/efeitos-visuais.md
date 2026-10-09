@@ -1,187 +1,107 @@
 # Efeitos visuais e interações
 
-Referência de **como funciona** cada efeito do site e **onde ajustar**. O histórico de decisões (o que foi pedido, testado, descartado e o que está pendente) fica em [historico.md](historico.md).
+Como cada efeito funciona e onde ajustar. O que foi pedido, testado e descartado está em [historico.md](historico.md).
 
-Estado: 07/10/2026, publicado na Netlify a partir do GitHub.
+Estado em 09/10/2026.
 
----
+## Visão geral
 
-## Mapa rápido
+A página é uma só (`src/routes/index.tsx`) e os links do menu apenas rolam até a seção.
 
-O site é **uma página só** (`src/routes/index.tsx`). Todo link do menu e dos pilares apenas rola até a seção (`#pilares`, `#metodo`…).
+Ordem das seções: menu, topo, Pilares, Sobre, O que eu levo para o seu time, Expertise, Método, pirâmide de testes, Trajetória, Contato e rodapé.
 
-**Ordem:** Menu → Topo (nome + foto) → Pilares → Sobre → Por que um QA → Expertise → Método (6 abas) → Trajetória → Contato → Rodapé.
-
-| Onde | Efeito | Arquivo principal |
+| Onde | O que acontece | Arquivo |
 |---|---|---|
-| Menu | Fixo no topo: transparente no início, vidro escuro e mais baixo depois de 40px; barra de progresso de leitura petróleo; item da seção atual em branco com traço petróleo; LinkedIn em **prata escovado** | `Layout.tsx` (`useMenuAoRolar`), `.btn-chrome` |
-| Topo | Fundo de traçados só à esquerda; nome com hierarquia; reflexo dentro do "Romanini"; linha verde-petróleo; foto com moldura cromada | `index.tsx`, `.text-chrome-reflexo`, `.frame-chrome` |
-| Pilares | Traçados espelhados à direita; cards com canto chanfrado; modal com quadrados de aço escovado | `Pilares.tsx`, `Fundos.tsx` (`DiagonaisEspelhadas`) |
-| Expertise | Textura de fibra de carbono (~3%) | `Fundos.tsx` (`FibraCarbono`), `.fibra-carbono` |
-| Método | Grade de telemetria sutil | `Fundos.tsx` (`GradeTelemetria`), `.grade-telemetria` |
-| Trajetória | Linha prata que "corre" a tela uma vez ao aparecer | `Fundos.tsx` (`LinhaPista`), `.linha-pista-*` |
-| Contato | Glow radial atrás do título; reflexo que passa pelo card | `index.tsx` |
-| Títulos (h2) | Faixa de luz que passa só dentro das letras | `.luz-passando` + `Layout.tsx` |
-| Botões | Aço escovado preto com filete verde-petróleo; glow verde no hover | `.btn-steel-dark` |
-| Cards clicáveis | Hover: sobe, borda e glow verde-petróleo, reflexo | `.card-chrome.group:hover`, `.sheen-hover` |
+| Menu | Transparente no topo; depois de 40px vira vidro escuro, fica mais baixo e mostra a barra de progresso de leitura | `Layout.tsx` (`useMenuAoRolar`) |
+| Topo | Fundo "Silver Arrow" (aço escovado, faixa de luz e filetes), nome com reflexo no "Romanini", foto com moldura cromada | `index.tsx`, `Fundos.tsx` |
+| Pilares | Carrossel com colunas de vidro em 3D ao fundo; no celular, cards em cascata | `Pilares.tsx` |
+| Sobre | Título à esquerda e três parágrafos à direita | `index.tsx` |
+| Método | 6 abas | `Metodo.tsx` |
+| Pirâmide | Presa na tela enquanto as camadas se montam ao rolar | `Camadas.tsx` |
+| Trajetória | Linha prata que corre a tela uma vez | `Fundos.tsx` (`LinhaPista`) |
+| Fundo da página | Névoa em duas camadas com parallax e grão de filme | `Profundidade.tsx` |
+| Títulos | Faixa de luz passando por dentro das letras | `.luz-passando` |
 
-**Princípios que valem para tudo:**
-- **Um acento só.** O verde-petróleo (`--teal`, #00A19C) aparece pouco: filete dos botões, hover de cards e botões, linha abaixo do nome e borda dos quadrados do modal.
-- **Luz só dentro das letras.** Brilhos em texto são uma camada do próprio preenchimento (`background-clip: text`), nunca um `::before`/`::after` por cima (isso clareava o fundo).
-- **Nunca use o atalho `background:`** em classes de texto com brilho (nem em hover ou keyframes): ele reseta o `background-clip` e o texto vira um retângulo. Use `background-image` e `background-position`.
-- **Nada passa por cima da foto.** O reflexo que atravessava a foto foi removido a pedido.
-- **`prefers-reduced-motion`** desliga todas as animações (reflexo, luz dos títulos, linha da pista, reflexo dos cards).
-- **Nunca use `overflow-x: hidden` no contêiner da página:** ele quebra o menu fixo (sticky). Use `overflow-x: clip`.
-- **Conteúdo nunca depende de JS para aparecer.** O site é pré-renderizado; o JavaScript só dispara a linha da pista e alinha a luz dos títulos.
+Algumas regras que valem para o site todo:
 
----
+- O verde-petróleo (`--teal`) aparece pouco. Textos ficam em branco, prata e cinza; o verde é só detalhe.
+- Brilho em texto é sempre uma camada do próprio preenchimento (`background-clip: text`). Um `::after` por cima clareia o fundo.
+- Em classes de texto com brilho, nunca use o atalho `background:`. Ele zera o `background-clip` e o texto vira um retângulo. Use `background-image` e `background-position`.
+- O contêiner da página usa `overflow-x: clip`. Com `hidden`, o menu deixa de ficar preso no topo.
+- Nenhum ancestral de um elemento com `backdrop-filter` pode ter `opacity` menor que 1, `filter` ou `mask`, senão o desfoque deixa de enxergar o fundo.
+- Com `prefers-reduced-motion`, as animações param e tudo aparece no estado final.
+- O conteúdo nunca depende de JavaScript para aparecer. Sem JS, cada seção mostra o texto completo.
 
-## Celular (até 767px)
+## Rolagem (`src/lib/rolagem.ts`)
 
-Tudo o que é só do celular usa `max-md:`/`md:hidden` ou fica no bloco `@media (max-width: 767.98px)` de `styles.css`. **Regra: nada disso pode mudar o desktop.**
+O Lenis faz a rolagem suave e roda no mesmo relógio do GSAP, para que as animações presas à rolagem andem no mesmo quadro que a página. Com movimento reduzido, o Lenis não liga.
 
-| O quê | Onde |
+O `__root.tsx` põe a classe `js` no `<html>` antes da primeira pintura. O CSS usa essa classe para escolher entre a versão animada e a estática, então a página já nasce com a altura certa e não pula ao carregar.
+
+## Pilares (`Pilares.tsx`)
+
+No desktop é um carrossel. O texto do pilar fica à esquerda, sobre a cena, e embaixo há uma barra com setas e os sete nomes em botões. Sem interação, o carrossel passa sozinho a cada 7 segundos e a linha dentro do botão ativo mostra o tempo até o próximo. Passar o mouse num nome mostra aquele pilar e pausa; clicar fixa nele.
+
+Ao fundo ficam sete colunas de vidro feitas em CSS 3D. Cada coluna é montada com "caixas" de cinco faces (componente `Caixa`) e usa o mesmo material da pirâmide: borda verde-água fina e pontinhos. A coluna do pilar atual acende, a câmera gira de leve na direção dela e, enquanto a seção está na tela, a cena "respira" com uma oscilação lenta de 2 graus. Atrás das colunas há duas fileiras de colunas-fantasma, só um gradiente que some para cima, além de névoa e partículas (pontos e pequenos "x") num canvas.
+
+A troca de pilar tem um tempo próprio: o texto que sai some em 350 ms, subindo e desfocando, e o novo entra em 550 ms. Antes de mudar esses tempos, veja as regras `.pc-etapa` em `styles.css`.
+
+No celular, os sete pilares viram cards em cascata. As colunas ficam presas ao fundo, apagadas, e o card que passa pelo meio da tela acende a coluna dele. Para isso o palco usa `overflow: clip` (com `hidden`, o fundo preso deixaria de funcionar).
+
+Os pilares Engenharia, Shift Left, Testes funcionais e Colaboração ainda não têm ferramentas cadastradas, então o grupo "Ferramentas" não aparece neles.
+
+## Pirâmide de testes (`Camadas.tsx`)
+
+Título: "Estratégia inteligente, *menor custo*", com "Estratégia inteligente," sempre inteira na primeira linha.
+
+A seção fica presa na tela (pin do ScrollTrigger) por 2,5 telas de rolagem, centralizada abaixo do menu. As três camadas descem e assentam da base para o topo, o texto da camada que está chegando acende ao lado, e no fim aparecem o brilho de trás e o selo "Quality gate aprovado".
+
+As camadas saem de um único triângulo fatiado (`clip-path`), por isso as laterais ficam alinhadas. O material é vidro fosco (`backdrop-filter`) com pontinhos verde-petróleo mais densos na base, e o contorno é desenhado em SVG porque o `clip-path` corta a borda. No celular a pirâmide monta sem prender a tela.
+
+## Fundo da página (`Profundidade.tsx`)
+
+São duas camadas de manchas de luz bem difusas, em prata e verde-petróleo. Quando a página rola, a camada de trás anda mais devagar que a da frente, e é essa diferença que dá a sensação de profundidade. Por cima vai um grão de filme fixo a 6,5% de opacidade, gerado em SVG, para o preto não ficar chapado. As cores e posições das manchas ficam nas constantes `FUNDO` e `FRENTE`.
+
+## Cores e fontes
+
+Os tokens ficam em `:root`, no `styles.css`:
+
+| Token | Uso |
 |---|---|
-| Menu em tela cheia (`MenuMobile`, `BotaoMenu`) | `Layout.tsx`. Fica fora do header porque o `backdrop-filter` do header prenderia um elemento `fixed` dentro dele |
-| Bloom dos cards ao entrar na tela | `useBloomNosCards` (`Layout.tsx`) + `.card-chrome.group.bloom` |
-| Abas do Método (fade, snap, centralizar, dica) | `useAbasNoCelular` (`Metodo.tsx`) + `.dica-abas` |
-| Títulos dos cards sem gradiente | `.titulo-card` |
-| Divisores "01 · PILARES"… | `DivisorSecao` (`Fundos.tsx`) |
-| Espaçamento de 56px | classes `max-md:py-14` / `max-md:pb-14` nas seções |
+| `--background` | Fundo da página (grafite quase preto) |
+| `--foreground` | Texto principal |
+| `--muted-foreground` | Textos de apoio |
+| `--silver` | Ícones e linhas |
+| `--teal` | O acento verde-petróleo, #00A19C |
+| `--grad-chrome` | Partes cromadas dos títulos (`.text-chrome`) |
 
----
-
-## Cores e tokens (`src/styles.css`, `:root`)
-
-| Token | Valor | Uso |
-|---|---|---|
-| `--background` | grafite quase preto | Fundo da página |
-| `--foreground` | branco levemente frio | Texto principal |
-| `--muted-foreground` | cinza médio | Textos de apoio |
-| `--silver` | prata | Ícones, linhas, pontos |
-| `--teal` | #00A19C | O único acento |
-| `--grad-chrome` | gradiente prata a 100° | Partes cromadas dos títulos (`.text-chrome`) |
-| `--grad-chrome-vertical` | #fff → #e4e4e4 → #8a8a8a → #c9c9c9 | Cromado do "Romanini" |
-| `--luz` | faixa branca a 105° | Luz que passa pelos títulos |
-
-**Fontes:** Cormorant Garamond (títulos, inclusive itálico 500), Inter (texto) e JetBrains Mono (código do exemplo de Page Object). O link do Google Fonts fica em `Layout.tsx` (`FONTS_LINKS`).
-
----
+Fontes: Cormorant Garamond nos títulos, Inter no texto e JetBrains Mono nos detalhes técnicos (números, rótulos pequenos, exemplo de código). O link do Google Fonts fica em `Layout.tsx`.
 
 ## Topo
 
-**Nome** (`index.tsx`, dentro do `<h1>`):
-- "Gabriel": `clamp(48px, 6vw, 84px)`, peso 400, cor sólida #d4d4d4, sem efeito.
-- "Romanini": `clamp(72px, 9vw, 128px)`, itálico 500, deslocado `0.3em` à direita, com `0.1em` de folga à direita para o itálico não cortar.
-- Bloco: `line-height .9`, `letter-spacing -0.02em`, nunca quebra linha. Medido em 375 px: o "Romanini" termina em 291 px.
-- Linha de acento: 180×2 px, #00A19C → transparente, com o mesmo `0.3em` do "Romanini" (por isso tem o mesmo `font-size`).
+O nome tem hierarquia: "Gabriel" menor e sólido, "Romanini" maior, em itálico e cromado, deslocado para a direita, com uma linha verde-petróleo embaixo. O reflexo que passa pelo "Romanini" é uma camada do próprio texto e anima só o `background-position`.
 
-**Reflexo do "Romanini"** (`.text-chrome-reflexo`): duas camadas de `background-image`, a faixa (110°, verde-petróleo .7 com núcleo `rgba(190,255,252,.95)`) sobre o cromado vertical. `background-size: 250% 100%, 100% 100%`. A animação só mexe em `background-position`, de `150% 0` até `-50% 0`, em 4 s, `cubic-bezier(.2,.8,.2,1)`, com 1 s de atraso. Como o topo do cromado já é quase branco, o reflexo aparece mais na metade de baixo das letras.
-
-**Texto acima do nome:** "SOFTWARE QUALITY ENGINEER" (componente `Eyebrow`).
-
-**Fundo de traçados:** `<img>` com `bg-hero-3840.webp`, opacidade 25%, `mix-blend-mode: screen` (o preto da imagem some). A máscara `HERO_BG_MASK`, no topo de `index.tsx`, faz três coisas:
-1. mostra só o lado esquerdo, sumindo entre 35% e 55% da largura;
-2. apaga embaixo;
-3. abre um "buraco" suave atrás do texto.
-
-No celular a imagem ocupa só os 46% de baixo do topo, para nenhum risco de luz cruzar o nome.
-
-**Foto:** moldura cromada (`.frame-chrome`), enquadramento `object-[50%_15%]` e sombra suave embaixo. Sem reflexo por cima.
-
----
-
-## Pilares
-
-**Cards** (`Pilares.tsx`): são `<button>`, então abrem o modal com teclado também. O primeiro, "Engenharia orientada à qualidade", ocupa 2 colunas. Cada card mostra ícone, nome e uma frase curta, **sem ferramentas** (regra: os pilares não são uma lista de ferramentas).
-
-- **Canto chanfrado** (`CantoChanfrado`): gradiente de petróleo (.4) no chanfro a prata (.12) nas pontas; no hover uma 2ª camada toda em #00A19C com glow aparece por opacidade em .3 s. SVG de tamanho fixo (340×240), para o ângulo não distorcer; por isso o texto começa mais abaixo (`pt-28`) e o ícone fica à direita.
-- **Hover:** cursor de "mãozinha", o card sobe, acende em verde-petróleo e a seta do "Ver detalhes" dá um pulo.
-
-**Modal** (Radix Dialog): fundo desfocado, zoom suave. Mostra a descrição, os tópicos em grade de 2 colunas, as ferramentas (discretas, só onde fazem sentido) e o botão "Ver no método". Esse botão fecha o modal e rola até a parte do método, com um pequeno atraso para a página já estar destravada.
-
-**Quadrados do modal** (`.quadro-aco`, um único componente para os 7 modais):
-- **Fundo:** riscos horizontais a .025 sobre o gradiente de #1c1d1f a #141516.
-- **Borda superior:** 1 px em `rgba(0,161,156,.35)`.
-- **Hover:** riscos a .04, gradiente de #232427 a #18191b e borda #00A19C, em .25 s.
-
-A borda anima, mas o fundo troca de uma vez, porque navegadores não animam gradientes.
-
-**Fundo da seção:** os mesmos traçados do topo, espelhados (`-scale-x-100`) para a direita. A máscara é aplicada antes do espelhamento, por isso "esquerda" no código vira direita na tela.
-
----
-
-## Botões (`src/styles.css`)
-
-| Classe | Onde | Acabamento |
-|---|---|---|
-| `.btn-chrome` | Só o LinkedIn do menu e o bloco "Produção" dos quality gates | Prata escovado: dois ritmos de riscos horizontais, reflexo vertical no meio, texto com leve efeito gravado, filete verde-petróleo de 2 px na base, glow verde no hover |
-| `.btn-steel-dark` | Todos os outros (Ver trajetória, LinkedIn do topo, Falar no LinkedIn, Ver no método) | Aço grafite escovado, filete verde-petróleo na base; no hover a borda fica verde e solta glow |
-
-Todo `<button>` tem cursor de "mãozinha" (regra em `@layer base`), porque o Tailwind 4 deixa botões com o cursor padrão.
-
----
-
-## Cards (`.card-chrome`)
-
-Vidro escuro com borda metálica fina (gradiente no `border-box`). Os cards com a classe `group` (pilares, Expertise, "Por que um QA" e Heurísticas) acendem no hover com borda, filete e glow verde-petróleo. Os outros (Métricas, por exemplo) não reagem, para não parecerem clicáveis.
-
-`.sheen-hover`: reflexo que atravessa o card uma vez no hover. `.sheen`: o mesmo reflexo passando sozinho a cada 8 s; hoje só no card de Contato.
-
----
+O fundo "Silver Arrow" é todo em CSS: aço escovado escuro, uma faixa de luz verde-petróleo no canto inferior direito com três filetes e um reflexo prateado no canto oposto. Ele começa atrás do menu e desce 240px para dentro dos Pilares, apagando aos poucos.
 
 ## Luz dos títulos (`.luz-passando`)
 
-Todos os `<h2>` de seção (Pilares, Sobre, Por que um QA, Expertise, as partes do Método, Trajetória e Contato) têm uma faixa de luz que passa **só dentro das letras**, a cada 9 s.
+Os títulos de seção têm uma faixa de luz que passa por dentro das letras a cada 9 segundos. Para a faixa atravessar a parte cinza e a parte cromada como se fosse uma só, cada parte desconta a própria distância até o início do título (`--dx`), medida por `useAlinharLuzDosTitulos` em `Layout.tsx`.
 
-- **O título é um bloco de texto recortado:** a faixa (`--luz`) é a 1ª camada e a cor base (`--luz-base`, cinza-prata `oklch(0.8 …)`) é a 2ª. A cor base fica um pouco abaixo do branco de propósito: em texto branco, a faixa branca não aparece.
-- **Partes cromadas do título** (`<em className="text-chrome">`) têm a faixa por cima do próprio cromado.
-- **Para a faixa andar como uma só** pela parte cinza e pela parte cromada: `--luz-x` é registrada com `@property` e animada no título, e as partes herdam o valor. Cada parte desconta a própria distância até o início do título (`--dx`), medida por `useAlinharLuzDosTitulos` em `Layout.tsx`, que roda ao carregar, quando as fontes chegam e ao redimensionar a janela.
-- **Os títulos têm `w-fit`**, para a faixa percorrer só a largura do texto. O de Contato tem `mx-auto`, para continuar centralizado.
+## Botões e cards
 
-**Descartado:** faixa presa à tela (`background-attachment: fixed`). No Chromium, combinada com `background-clip: text`, a luz simplesmente não aparecia.
+`.btn-steel-dark` é o aço grafite usado em quase todos os botões, com um filete verde-petróleo na base. `.btn-chrome`, prata escovado, fica só no LinkedIn do menu e no bloco "Produção" dos quality gates.
 
----
+`.card-chrome` é o vidro escuro com borda metálica. Cards com a classe `group` acendem no hover; os outros não reagem, para não parecerem clicáveis.
 
-## Fundos das seções (`src/components/portfolio/Fundos.tsx`)
+## Método (`Metodo.tsx`)
 
-Todos ficam atrás do conteúdo (`-z-10`) dentro de um `<div className="relative">` que ocupa a largura toda.
+São seis abas reais: Estratégia, Testes, Produto, Métricas, Automação e Cultura. Os painéis fechados continuam no HTML, então o conteúdo segue indexável. A função `irParaMetodo` abre a aba certa antes de rolar até uma parte; a lista de partes de cada aba fica em `ABAS`.
 
-| Seção | Componente | Como funciona |
-|---|---|---|
-| Pilares | `DiagonaisEspelhadas` | SVG com a geometria da imagem de traçados, espelhado à direita: linha principal verde-petróleo com glow, demais em prata (.15 a .25); 40% no celular |
-| Expertise | `FibraCarbono` | Padrão de sarja em CSS (`.fibra-carbono`), opacidade .03, apagando em cima e embaixo |
-| Método | `GradeTelemetria` | Linhas de 1 px a cada 32 px (2,5%) e a cada 160 px (4,5%), sumindo nas bordas |
-| Trajetória | `LinhaPista` | `IntersectionObserver`: quando a seção entra na tela, o trilho cresce da esquerda para a direita (1,8 s) com um "carro" de luz na ponta. Corre uma vez só |
-| Contato | (em `index.tsx`) | Glow radial claro atrás do título; o card tem `isolate` para o glow ficar entre o fundo e o texto |
+## Como testar
 
----
+Uso o Playwright (`playwright-core`) com o Chromium para tirar prints e medir posições. Algumas coisas que aprendi:
 
-## Seção Método (`Metodo.tsx`)
-
-Abre com "Como a qualidade é construída" e **6 abas reais** (só o conteúdo da aba escolhida aparece):
-
-| Aba | Conteúdo |
-|---|---|
-| Estratégia | Shift Left (comparação "tradicional × Shift Left") + Pirâmide (camadas com `clip-path`) |
-| Cultura | "Qualidade é responsabilidade de todos": card comparativo por papéis (Produto, Design, Desenvolvimento, QA, Liderança), tradicional × cultura de qualidade, + checklist. Mesma estrutura do Shift Left |
-| Testes | Heurísticas (6 cards) + Tipos de teste (grade de 10) |
-| Produto | Citação + lista |
-| Métricas | Métricas (Antes, Durante, Depois) + Quality Gates (Commit → Gate 1–4 → Produção) |
-| Automação | Page Objects + exemplo em Playwright |
-
-- **Abas:** `role="tablist"`, 12 px entre elas, numa linha só; no celular, rolagem horizontal sem barra. A aba ativa tem borda e texto em verde-petróleo. As setas ← → do teclado trocam de aba. 64 px entre as abas e o conteúdo.
-- **Painéis fechados continuam no HTML** (`hidden`), então o conteúdo segue indexável.
-- **"Ver no método" dos pilares** chama `irParaMetodo("quality-gates")`, por exemplo. A função abre a aba que contém aquela parte e só depois rola até ela. Um endereço com `#parte` também abre a aba certa ao carregar. A lista de partes de cada aba fica na constante `ABAS`.
-- **"Por que ter um engenheiro de qualidade no time"** saiu das abas e virou a seção própria `PorQueQaSection`, logo depois do Sobre.
-
-Sem numeração visível (pedido: "não quero tudo enumerado").
-
----
-
-## Como testar efeitos
-
-Prints comuns do navegador sem janela (headless) **não são confiáveis** para este site. Eles capturam antes do JavaScript carregar e não disparam a rolagem; foi isso que fez a linha da pista e a máscara do topo parecerem quebradas. O que funcionou: controlar o Edge pelo protocolo DevTools (`--remote-debugging-port`) com um script em Node que:
-- fixa o tamanho da tela com `Emulation.setDeviceMetricsOverride`;
-- rola com `scrollBehavior = 'auto'` (o site usa rolagem suave);
-- congela animações com um `<style>` injetado (`animation: none` + posição forçada) antes do print.
+- Teste em `npm run build` + `npx vite preview`, não no `dev`.
+- Depois da rolagem, espere um pouco antes do print: o Lenis suaviza o movimento e a animação leva um instante para chegar.
+- O WebKit do Playwright no Windows não renderiza CSS 3D, então as colunas e a pirâmide aparecem achatadas nele. Para o Safari, teste num Mac ou iPhone de verdade.
+- O Chromium sem placa de vídeo mede menos quadros por segundo que um computador normal. Compare com uma seção simples antes de concluir que algo está pesado.

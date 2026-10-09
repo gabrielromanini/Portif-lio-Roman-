@@ -50,8 +50,13 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    // suppressHydrationWarning: o script abaixo põe a classe `js` no <html> antes do React.
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        {/* Marca que há JS antes da pintura: o CSS escolhe o modo dos Pilares sem trocar o layout depois */}
+        <script
+          dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }}
+        />
         <HeadContent />
       </head>
       <body>

@@ -1,381 +1,580 @@
-import { useId, useState } from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { irParaMetodo } from "@/components/portfolio/Metodo";
 import {
-  ArrowLeftToLine,
-  ArrowUpRight,
-  Bot,
-  Code2,
-  Handshake,
-  ListChecks,
-  ShieldCheck,
-  Workflow,
-  X,
-  type LucideIcon,
-} from "lucide-react";
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { gsap } from "@/lib/rolagem";
+
+const MONO = "font-['JetBrains_Mono',ui-monospace,monospace]";
+
 type Pilar = {
-  icon: LucideIcon;
-  title: string;
-  /** Uma linha no card: o que o pilar demonstra. */
-  summary: string;
-  description: string;
-  topics: { name: string; text: string }[];
-  /** Ferramentas aparecem só dentro do modal, em segundo plano. */
-  tools?: string[];
-  /** Seção do método com mais detalhes. */
-  more?: string;
+  /** Nome curto, na barra de navegação. */
+  curto: string;
+  /** Título com a palavra-chave em <em> (prata, itálico). */
+  titulo: ReactNode;
+  descricao: string;
+  /** "Onde atua": os tópicos do pilar. */
+  atua: string[];
+  /** Só os pilares que têm ferramentas cadastradas; nos outros o grupo não aparece. */
+  ferramentas?: string[];
+  /** Seção do Método com mais detalhes. */
+  metodo?: string;
 };
 
+// Da esquerda (01) para a direita (07).
 const PILARES: Pilar[] = [
   {
-    icon: Code2,
-    title: "Engenharia orientada à qualidade",
-    summary: "A filosofia por trás de todo o trabalho.",
-    description:
+    curto: "Engenharia",
+    titulo: (
+      <>
+        Engenharia orientada à <em>qualidade</em>
+      </>
+    ),
+    descricao:
       "Qualidade não é uma etapa no fim do processo: é um critério de engenharia presente em cada decisão, do desenho da solução ao acompanhamento em produção.",
-    topics: [
-      {
-        name: "Código pensado para ser testado",
-        text: "Soluções desenhadas desde o início para serem verificáveis e fáceis de manter.",
-      },
-      {
-        name: "Estratégia antes de ferramenta",
-        text: "Testes escolhidos pelo risco que reduzem, seguindo a pirâmide de testes.",
-      },
-      {
-        name: "Decisão com dados",
-        text: "Métricas extraídas antes e depois de cada mudança de processo.",
-      },
-      {
-        name: "O usuário no centro",
-        text: "Fluxos, acessibilidade e performance tratados como requisito, desde a primeira linha.",
-      },
+    atua: [
+      "Código pensado para ser testado",
+      "Estratégia antes de ferramenta",
+      "Decisão com dados",
+      "O usuário no centro",
     ],
-    more: "#metodo",
+    metodo: "metodo",
   },
   {
-    icon: Workflow,
-    title: "Automação de testes",
-    summary: "Testes confiáveis, rápidos e fáceis de manter.",
-    description:
-      "Automação tratada como código de produção: legível, reutilizável e integrada ao pipeline, cobrindo interface, API e performance.",
-    topics: [
-      {
-        name: "E2E com Cypress e Playwright",
-        text: "Jornadas críticas do usuário de ponta a ponta, organizadas com Page Objects.",
-      },
-      {
-        name: "Testes de API com Postman",
-        text: "Contratos, status, regras de negócio e dados validados direto nas APIs.",
-      },
-      {
-        name: "Performance com k6",
-        text: "Comportamento do sistema sob carga, antes que o usuário perceba.",
-      },
-      {
-        name: "No pipeline",
-        text: "Suítes rodando a cada entrega, com resultados visíveis para o time.",
-      },
-    ],
-    tools: ["Cypress", "Playwright", "Postman", "k6"],
-    more: "#automacao",
-  },
-  {
-    icon: Bot,
-    title: "IA aplicada à qualidade",
-    summary: "LLMs, agentes e testes inteligentes.",
-    description:
-      "Utilização de IA, LLMs e agentes para apoiar a análise de requisitos, a geração de cenários, a criação de testes e a identificação estratégica de riscos.",
-    topics: [
-      {
-        name: "Análise de requisitos",
-        text: "Leitura assistida de histórias e critérios para encontrar lacunas e ambiguidades.",
-      },
-      {
-        name: "Geração de cenários",
-        text: "Cenários e planos de teste gerados com apoio de agentes inteligentes.",
-      },
-      {
-        name: "Criação de testes",
-        text: "Aceleração na escrita de testes automatizados e validações.",
-      },
-      {
-        name: "Riscos estratégicos",
-        text: "Identificação de pontos de maior risco para direcionar o esforço de teste.",
-      },
-    ],
-    tools: ["GenAI", "LLMs", "Agentes", "MCP"],
-  },
-  {
-    icon: ArrowLeftToLine,
-    title: "Shift Left Testing",
-    summary: "Qualidade desde o início.",
-    description:
+    curto: "Shift Left",
+    titulo: (
+      <>
+        <em>Shift Left</em> Testing
+      </>
+    ),
+    descricao:
       "Antecipação da qualidade para as primeiras etapas do desenvolvimento, reduzindo riscos e custos de correção.",
-    topics: [
-      {
-        name: "QA no refinamento",
-        text: "Dúvidas e riscos levantados antes de qualquer linha de código.",
-      },
-      {
-        name: "Critérios de aceite claros",
-        text: "Todos com a mesma definição de pronto desde o começo.",
-      },
-      {
-        name: "Quality Champions",
-        text: "Referências de qualidade dentro de cada squad.",
-      },
-      {
-        name: "Feedback rápido",
-        text: "Testes rodando a cada pull request, enquanto corrigir ainda é barato.",
-      },
+    atua: [
+      "QA no refinamento",
+      "Critérios de aceite claros",
+      "Quality Champions",
+      "Feedback rápido",
     ],
-    more: "#shift-left",
+    metodo: "shift-left",
   },
   {
-    icon: ListChecks,
-    title: "Testes funcionais",
-    summary: "Exploratórios, regressivos, smoke, usabilidade e mais.",
-    description:
+    curto: "Testes funcionais",
+    titulo: (
+      <>
+        Testes <em>funcionais</em>
+      </>
+    ),
+    descricao:
       "Cada risco pede um tipo de teste. A combinação certa garante que o produto faz o que deveria, do jeito que o usuário espera.",
-    topics: [
-      {
-        name: "Exploratório",
-        text: "Investigar o produto de forma estruturada para encontrar comportamentos inesperados e riscos não cobertos pelos testes existentes.",
-      },
-      {
-        name: "Regressivo",
-        text: "Garantir que alterações não introduzam problemas em funcionalidades existentes.",
-      },
-      {
-        name: "Smoke",
-        text: "Validar rapidamente se a aplicação está estável o suficiente para seguir para testes mais profundos.",
-      },
-      {
-        name: "Sanidade",
-        text: "Verificar se uma alteração específica funciona conforme esperado antes de uma validação mais ampla.",
-      },
-      {
-        name: "Usabilidade",
-        text: "Avaliar se a interface e os fluxos são compreensíveis e adequados para o usuário.",
-      },
-      {
-        name: "Integração",
-        text: "Validar a comunicação entre diferentes componentes, serviços e sistemas.",
-      },
-    ],
-    more: "#tipos",
+    atua: ["Exploratório", "Regressivo", "Smoke", "Sanidade", "Usabilidade", "Integração"],
+    metodo: "tipos",
   },
   {
-    icon: ShieldCheck,
-    title: "Quality Gates",
-    summary: "Qualidade integrada ao CI/CD.",
-    description:
+    curto: "Automação",
+    titulo: (
+      <>
+        <em>Automação</em> de testes
+      </>
+    ),
+    descricao:
+      "Automação tratada como código de produção: legível, reutilizável e integrada ao pipeline, cobrindo interface, API e performance.",
+    atua: ["E2E", "API", "Performance", "Pipeline"],
+    ferramentas: ["Cypress", "Playwright", "Postman", "k6"],
+    metodo: "automacao",
+  },
+  {
+    curto: "Quality Gates",
+    titulo: (
+      <>
+        <em>Quality Gates</em>
+      </>
+    ),
+    descricao:
       "Critérios automatizados de qualidade integrados ao CI/CD para impedir que alterações com falhas conhecidas avancem no fluxo de entrega, desde o upstream até o downstream.",
-    topics: [
-      {
-        name: "Do upstream ao downstream",
-        text: "Verificações em cada etapa, do commit até a produção.",
-      },
-      {
-        name: "Critérios objetivos",
-        text: "Definidos com o time e com produto: o que bloqueia e o que só alerta.",
-      },
-      {
-        name: "Resultados visíveis",
-        text: "Relatórios acessíveis para todos acompanharem a saúde das entregas.",
-      },
-    ],
-    tools: ["Git", "CI/CD", "Cypress", "Playwright", "Postman", "k6", "SonarQube", "Allure"],
-    more: "#quality-gates",
+    atua: ["Do upstream ao downstream", "Critérios objetivos", "Resultados visíveis"],
+    ferramentas: ["Git", "CI/CD", "Cypress", "Playwright", "Postman", "k6", "SonarQube", "Allure"],
+    metodo: "quality-gates",
   },
   {
-    icon: Handshake,
-    title: "Qualidade colaborativa",
-    summary: "Produto, Dev, cliente e QA juntos.",
-    description:
-      "Comunicação é a soft skill mais importante de um engenheiro de software: tanto para entender o produto e o cliente quanto para antecipar possíveis problemas e economizar tempo.",
-    topics: [
-      {
-        name: "Entender o produto e o cliente",
-        text: "Saber o porquê de cada funcionalidade antes de decidir como testá-la.",
-      },
-      {
-        name: "Antecipar problemas",
-        text: "Boa parte dos bugs nasce de um mal-entendido, não de código.",
-      },
-      {
-        name: "Economizar tempo",
-        text: "Menos retrabalho quando todos se entendem cedo.",
-      },
+    curto: "IA aplicada",
+    titulo: (
+      <>
+        <em>IA</em> aplicada à qualidade
+      </>
+    ),
+    descricao:
+      "Utilização de IA, LLMs e agentes para apoiar a análise de requisitos, a geração de cenários, a criação de testes e a identificação estratégica de riscos.",
+    atua: [
+      "Análise de requisitos",
+      "Geração de cenários",
+      "Criação de testes",
+      "Riscos estratégicos",
     ],
-    more: "#produto",
+    ferramentas: ["GenAI", "LLMs", "Agentes", "MCP"],
+  },
+  {
+    curto: "Colaboração",
+    titulo: (
+      <>
+        Qualidade <em>colaborativa</em>
+      </>
+    ),
+    descricao:
+      "Comunicação é a soft skill mais importante de um engenheiro de software: tanto para entender o produto e o cliente quanto para antecipar possíveis problemas e economizar tempo.",
+    atua: ["Entender o produto e o cliente", "Antecipar problemas", "Economizar tempo"],
+    metodo: "produto",
   },
 ];
 
+const N = PILARES.length;
+const dois = (i: number) => String(i + 1).padStart(2, "0");
+// Tempo de cada pilar enquanto o carrossel passa sozinho (a linha da barra enche nele)
+const TEMPO_PILAR = 7000;
+
 /**
- * Contorno chanfrado no canto superior esquerdo do card: duas linhas cromadas
- * que se apagam nas pontas. Tamanho fixo, para o ângulo nunca distorcer.
+ * Caixa CSS 3D de 5 faces (frente, trás, laterais e topo), no material de vidro da
+ * pirâmide. Medidas em CSS (aceitam var() e calc()); a base fica na origem do pai.
  */
-function CantoChanfrado() {
-  const id = useId();
-  // Normal: petróleo no chanfro (≈36% do gradiente) até prata nas pontas.
-  // Hover: uma 2ª camada toda em #00A19C aparece por opacidade (gradientes não animam).
-  const contorno = "M9 230 V98 Q9 86 18 78 L80 21 Q89 13 102 13 H340";
-  const interno = "M19 210 V104 Q19 94 27 87 L86 33 Q94 25 106 25 H300";
-  const hover =
-    "opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:opacity-100 motion-reduce:transition-none";
+function Caixa({
+  w,
+  h,
+  d,
+  className = "",
+}: {
+  w: string;
+  h: string;
+  d: string;
+  className?: string;
+}) {
   return (
-    <svg
-      aria-hidden
-      width="340"
-      height="240"
-      viewBox="0 0 340 240"
-      fill="none"
-      className="pointer-events-none absolute left-0 top-0"
-    >
-      <defs>
-        <linearGradient
-          id={`${id}-a`}
-          x1="0"
-          y1="240"
-          x2="340"
-          y2="0"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0" stopColor="rgb(220,220,220)" stopOpacity="0.12" />
-          <stop offset="0.36" stopColor="rgb(0,161,156)" stopOpacity="0.4" />
-          <stop offset="1" stopColor="rgb(220,220,220)" stopOpacity="0.12" />
-        </linearGradient>
-        <radialGradient id={`${id}-g`} cx="70" cy="40" r="120" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.07" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="340" height="240" fill={`url(#${id}-g)`} />
-
-      {/* Normal */}
-      <path d={contorno} stroke={`url(#${id}-a)`} strokeWidth="1.25" />
-      <path d={interno} stroke={`url(#${id}-a)`} strokeWidth="1" opacity="0.6" />
-
-      {/* Hover */}
-      <g className={`${hover} [filter:drop-shadow(0_0_6px_rgba(0,161,156,0.5))]`}>
-        <path d={contorno} stroke="#00a19c" strokeWidth="1.25" />
-        <path d={interno} stroke="#00a19c" strokeWidth="1" opacity="0.6" />
-      </g>
-    </svg>
+    <div className={`cx ${className}`} style={{ "--bw": w, "--bh": h, "--bd": d } as CSSProperties}>
+      <i className="cx-f" />
+      <i className="cx-t" />
+      <i className="cx-e" />
+      <i className="cx-d" />
+      <i className="cx-s" />
+    </div>
   );
 }
 
-export function PilaresSection() {
-  // O índice fica guardado ao fechar, para o conteúdo não sumir durante a animação.
-  const [indice, setIndice] = useState(0);
-  const [aberto, setAberto] = useState(false);
-  const pilar = PILARES[indice];
-
-  // Fecha o modal e só depois rola, para a página já estar destravada.
-  // Abre a aba certa do Método antes de rolar (ver irParaMetodo).
-  function irPara(hash: string) {
-    setAberto(false);
-    setTimeout(() => irParaMetodo(hash.slice(1)), 250);
+/**
+ * Fundo: pontos e pequenos "x" brancos e verde-petróleo em 3 planos. Os de trás são
+ * menores e mais lentos; todos derivam devagar e reagem à rolagem e ao giro da
+ * câmera. Um canvas só da seção, desenhado só com ela na tela; devicePixelRatio ≤ 2.
+ */
+function ligarParticulas(canvas: HTMLCanvasElement, secao: HTMLElement, parado: boolean) {
+  const ctx = canvas.getContext("2d");
+  const PLANOS = [
+    { n: 34, r: 2.2, a: 0.2, v: 1.5, rolagem: 0.03 },
+    { n: 22, r: 3.4, a: 0.32, v: 3.5, rolagem: 0.07 },
+    { n: 10, r: 5, a: 0.48, v: 6, rolagem: 0.13 },
+  ];
+  let largura = 0;
+  let altura = 0;
+  let pontos: { x: number; y: number; plano: number; cruz: boolean; teal: boolean }[] = [];
+  let visivel = false;
+  function desenhar() {
+    if (!ctx || !largura) return;
+    const t = parado ? 0 : performance.now() / 1000;
+    const rolagem = parado ? 0 : window.scrollY;
+    const giro = parado ? 0 : Number(getComputedStyle(secao).getPropertyValue("--ativo")) || 0;
+    ctx.clearRect(0, 0, largura, altura);
+    ctx.lineWidth = 1;
+    for (const pt of pontos) {
+      const pl = PLANOS[pt.plano];
+      let x = (pt.x + t * pl.v - giro * pl.v * 6) % largura;
+      let y = (pt.y - t * pl.v * 0.4 - rolagem * pl.rolagem) % altura;
+      if (x < 0) x += largura;
+      if (y < 0) y += altura;
+      const cor = pt.teal ? "#00a19c" : "#e8f0f0";
+      ctx.globalAlpha = pl.a;
+      if (pt.cruz) {
+        const m = pl.r / 2;
+        ctx.strokeStyle = cor;
+        ctx.beginPath();
+        ctx.moveTo(x - m, y - m);
+        ctx.lineTo(x + m, y + m);
+        ctx.moveTo(x + m, y - m);
+        ctx.lineTo(x - m, y + m);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = cor;
+        ctx.beginPath();
+        ctx.arc(x, y, pl.r / 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
   }
+  function medir() {
+    if (!ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    largura = canvas.clientWidth;
+    altura = canvas.clientHeight;
+    canvas.width = Math.round(largura * dpr);
+    canvas.height = Math.round(altura * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    pontos = PLANOS.flatMap((pl, plano) =>
+      Array.from({ length: pl.n }, () => ({
+        x: Math.random() * largura,
+        y: Math.random() * altura,
+        plano,
+        cruz: Math.random() < 0.45,
+        teal: Math.random() < 0.4,
+      })),
+    );
+    desenhar();
+  }
+  const quadro = () => {
+    if (visivel) desenhar();
+  };
+  const obsTamanho = new ResizeObserver(medir);
+  obsTamanho.observe(canvas);
+  const obsVisivel = new IntersectionObserver(([e]) => (visivel = e.isIntersecting));
+  obsVisivel.observe(canvas);
+  if (!parado) gsap.ticker.add(quadro);
+  return () => {
+    gsap.ticker.remove(quadro);
+    obsTamanho.disconnect();
+    obsVisivel.disconnect();
+  };
+}
+
+/**
+ * Pilares em carrossel, com as colunas de vidro ao fundo.
+ * - O texto do pilar fica à esquerda, por cima da cena, num véu escuro bem
+ *   esfumado. Embaixo, centralizada, uma barra única de navegação: ‹ itens › (no
+ *   celular, ‹ 03 / 07 ›), com a linha que enche até o próximo pilar.
+ * - Passa sozinho; hover num item mostra aquele pilar (pausa) e clique fixa nele.
+ * - A coluna do pilar acende lá atrás, com o número dela por cima; a câmera gira de
+ *   leve na direção dela e "respira" devagar enquanto a seção está na tela.
+ * - Celular: os 7 pilares em cards (cascata); as colunas ficam presas ao fundo,
+ *   apagadas, e o card no meio da tela acende a coluna dele.
+ * - Movimento reduzido: sem passar sozinho nem animar. Sem JS: os 7 em lista.
+ */
+export function PilaresSection() {
+  const ref = useRef<HTMLElement>(null);
+  const [ativo, setAtivo] = useState(0);
+  const [pausado, setPausado] = useState(false);
+  // Clique (ou setas): fixa no pilar escolhido, sem passar sozinho
+  const [fixo, setFixo] = useState(false);
+  const [autoplay, setAutoplay] = useState(false);
+  const ativoRef = useRef(0);
+
+  const ir = useCallback((i: number) => {
+    ativoRef.current = i;
+    setAtivo(i);
+  }, []);
+
+  // Passa sozinho com a seção na tela, a aba visível e sem movimento reduzido.
+  // Também liga as partículas e marca a seção como visível (a câmera respira).
+  useEffect(() => {
+    const secao = ref.current;
+    if (!secao) return;
+    const pode = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    const desktop = window.matchMedia("(min-width: 768px)");
+    let naTela = false;
+    const atualizar = () => {
+      setAutoplay(pode.matches && desktop.matches && naTela && !document.hidden);
+      secao.toggleAttribute("data-visivel", naTela);
+    };
+    const obs = new IntersectionObserver(([e]) => {
+      naTela = e.isIntersecting;
+      atualizar();
+    });
+    obs.observe(secao);
+    pode.addEventListener("change", atualizar);
+    desktop.addEventListener("change", atualizar);
+    document.addEventListener("visibilitychange", atualizar);
+    const parar = ligarParticulas(
+      secao.querySelector("canvas") as HTMLCanvasElement,
+      secao,
+      !pode.matches,
+    );
+    return () => {
+      obs.disconnect();
+      pode.removeEventListener("change", atualizar);
+      desktop.removeEventListener("change", atualizar);
+      document.removeEventListener("visibilitychange", atualizar);
+      parar();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!autoplay || pausado || fixo) return;
+    const t = window.setTimeout(() => ir((ativoRef.current + 1) % N), TEMPO_PILAR);
+    return () => clearTimeout(t);
+  }, [autoplay, pausado, fixo, ativo, ir]);
+
+  // Celular (cards em cascata): o card que passa pelo meio da tela vira o ativo
+  useEffect(() => {
+    const secao = ref.current;
+    if (!secao) return;
+    const celular = window.matchMedia("(max-width: 767.98px)");
+    const cards = Array.from(secao.querySelectorAll<HTMLElement>(".pc-painel"));
+    let obs: IntersectionObserver | null = null;
+    const ligar = () => {
+      obs?.disconnect();
+      obs = null;
+      if (!celular.matches) return;
+      obs = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas)
+            if (e.isIntersecting) ir(cards.indexOf(e.target as HTMLElement));
+        },
+        { rootMargin: "-45% 0px -45% 0px" },
+      );
+      cards.forEach((c) => obs!.observe(c));
+    };
+    ligar();
+    celular.addEventListener("change", ligar);
+    return () => {
+      obs?.disconnect();
+      celular.removeEventListener("change", ligar);
+    };
+  }, [ir]);
+
+  // Número sobre a coluna ativa: segue a âncora acima do capitel dela
+  useEffect(() => {
+    const secao = ref.current;
+    if (!secao) return;
+    const palco = secao.querySelector<HTMLElement>(".pc-palco")!;
+    const marca = secao.querySelector<HTMLElement>(".pc-marca")!;
+    const ancoras = Array.from(secao.querySelectorAll<HTMLElement>("[data-ancora]"));
+    let visivel = false;
+    const posicionar = () => {
+      if (!visivel || getComputedStyle(marca).display === "none") return;
+      const caixa = palco.getBoundingClientRect();
+      const r = ancoras[ativoRef.current].getBoundingClientRect();
+      marca.style.transform = `translate3d(${(r.left - caixa.left - marca.offsetWidth / 2).toFixed(1)}px, ${(r.top - caixa.top - marca.offsetHeight).toFixed(1)}px, 0)`;
+    };
+    const obs = new IntersectionObserver(([e]) => (visivel = e.isIntersecting));
+    obs.observe(secao);
+    gsap.ticker.add(posicionar);
+    return () => {
+      gsap.ticker.remove(posicionar);
+      obs.disconnect();
+    };
+  }, []);
+
+  // Barra: hover mostra (pausa), sair retoma; clique e setas fixam
+  const entrar = (i: number) => {
+    if (!window.matchMedia("(hover: hover)").matches) return;
+    setPausado(true);
+    ir(i);
+  };
+  const sairDaBarra = () => {
+    setPausado(false);
+  };
+  const fixar = (i: number) => {
+    setFixo(true);
+    ir(i);
+  };
+  const anterior = () => fixar((ativoRef.current - 1 + N) % N);
+  const proximo = () => fixar((ativoRef.current + 1) % N);
+  const teclar = (e: KeyboardEvent<HTMLElement>) => {
+    const delta = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (delta === undefined) return;
+    e.preventDefault();
+    const i = (ativoRef.current + delta + N) % N;
+    fixar(i);
+    ref.current?.querySelector<HTMLElement>(`[data-item="${i}"]`)?.focus();
+  };
+
+  const W = "var(--W)";
+  const H = "var(--H)";
+  const correndo = autoplay && !pausado && !fixo;
 
   return (
     <section
+      ref={ref}
       id="pilares"
-      className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-28 pt-8 max-md:py-14 sm:px-6"
+      className="pc scroll-mt-20"
+      style={{ "--ativo": ativo } as CSSProperties}
     >
-      <h2 className="luz-passando w-fit max-w-3xl text-4xl leading-tight sm:text-5xl">
-        Os pilares da <em className="text-chrome">qualidade de software</em>
-      </h2>
+      <div className="pc-palco">
+        {/* Fundo: cena, névoa e partículas. No celular fica preso atrás dos cards */}
+        <div className="pc-fundo">
+          <div className="pc-fundo-preso">
+            <canvas aria-hidden className="pc-particulas" />
+            <div aria-hidden className="pc-chao" />
 
-      <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {PILARES.map((p, i) => (
-          <li key={p.title} className={i === 0 ? "sm:col-span-2" : ""}>
-            <button
-              type="button"
-              onClick={() => {
-                setIndice(i);
-                setAberto(true);
-              }}
-              className="card-chrome group relative flex h-full w-full flex-col overflow-hidden rounded-2xl px-8 pb-7 pt-28 text-left transition-[transform,box-shadow] duration-300 hover:-translate-y-1"
-            >
-              <div className="sheen-hover absolute inset-0" />
-              <CantoChanfrado />
-              <p.icon className="absolute right-7 top-7 h-7 w-7 text-silver" strokeWidth={1.25} />
-              <h3 className={`font-medium ${i === 0 ? "text-2xl" : "text-xl"}`}>{p.title}</h3>
-              <p className="mt-2 font-light leading-relaxed text-muted-foreground">{p.summary}</p>
-              <span className="mt-auto flex items-center gap-1.5 pt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors group-hover:text-foreground">
-                Ver detalhes{" "}
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <DialogPrimitive.Root open={aberto} onOpenChange={setAberto}>
-        <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-          <DialogPrimitive.Content className="card-chrome fixed left-1/2 top-1/2 z-50 max-h-[88vh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl p-7 shadow-[0_40px_120px_-30px_rgba(200,210,225,0.35)] duration-300 focus:outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:p-10">
-            <>
-              <div className="flex items-start justify-between gap-6">
-                <pilar.icon className="h-8 w-8 text-silver" strokeWidth={1.25} />
-                <DialogPrimitive.Close className="rounded-full border border-white/15 p-2 text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground">
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Fechar</span>
-                </DialogPrimitive.Close>
-              </div>
-
-              <DialogPrimitive.Title className="mt-6 font-serif text-4xl leading-tight">
-                {pilar.title}
-              </DialogPrimitive.Title>
-              <DialogPrimitive.Description className="mt-4 font-light leading-relaxed text-muted-foreground sm:text-lg">
-                {pilar.description}
-              </DialogPrimitive.Description>
-
-              <ul className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2">
-                {pilar.topics.map((t) => (
-                  <li key={t.name} className="quadro-aco p-5">
-                    <h4 className="text-sm font-medium uppercase tracking-[0.15em]">{t.name}</h4>
-                    <p className="mt-2 text-sm font-light leading-relaxed text-muted-foreground">
-                      {t.text}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-
-              {pilar.tools && (
-                <div className="mt-8">
-                  <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                    Ferramentas
-                  </p>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {pilar.tools.map((t) => (
-                      <li
-                        key={t}
-                        className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-xs text-muted-foreground"
-                      >
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
+            {/* Cena 3D: as colunas acompanham o carrossel */}
+            <div aria-hidden className="pc-cena">
+              <div className="pc-camera">
+                <div className="pc-respira">
+                  <div className="pc-piso" />
+                  {[
+                    { z: 7, h: 1.2, classe: "pc-fantasmas-1" },
+                    { z: 15, h: 1.5, classe: "pc-fantasmas-2" },
+                  ].map((f) => (
+                    <div
+                      key={f.z}
+                      className={`pc-fantasmas ${f.classe}`}
+                      style={{ "--z": f.z } as CSSProperties}
+                    >
+                      {Array.from({ length: 11 }, (_, j) => (
+                        <div
+                          key={j}
+                          className="pc-fantasma"
+                          style={{ "--j": j - 5 } as CSSProperties}
+                        >
+                          <Caixa w={W} h={`calc(${H} * ${f.h})`} d={W} />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {PILARES.map((p, i) => (
+                    <div
+                      key={p.curto}
+                      className="pc-coluna"
+                      style={{ "--i": i } as CSSProperties}
+                      data-ativo={ativo === i ? "" : undefined}
+                    >
+                      <Caixa w={`calc(${W} * 1.6)`} h={`calc(${W} * 0.3)`} d={`calc(${W} * 1.6)`} />
+                      <div className="pc-ergue">
+                        <Caixa w={W} h={H} d={W} />
+                        <div className="pc-topo">
+                          <Caixa
+                            w={`calc(${W} * 1.45)`}
+                            h={`calc(${W} * 0.3)`}
+                            d={`calc(${W} * 1.45)`}
+                          />
+                          <span data-ancora className="pc-ancora" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="pc-viga">
+                    <Caixa
+                      w={`calc(var(--E) * 6 + ${W} * 2.2)`}
+                      h={`calc(${W} * 0.55)`}
+                      d={`calc(${W} * 1.6)`}
+                    />
+                  </div>
                 </div>
-              )}
+              </div>
+            </div>
+            <div aria-hidden className="pc-nevoa" />
+            {/* Número sobre a coluna ativa (liga o texto à coluna) */}
+            <span aria-hidden className={`pc-marca ${MONO}`}>
+              {dois(ativo)}
+            </span>
+          </div>
+        </div>
 
-              {pilar.more && (
-                <button
-                  type="button"
-                  onClick={() => irPara(pilar.more!)}
-                  className="btn-steel-dark mt-10 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium"
+        {/* Texto do pilar */}
+        <div
+          role="region"
+          aria-roledescription="carrossel"
+          aria-label="Pilares da qualidade de software"
+          className="pc-texto"
+        >
+          <p
+            className={`${MONO} flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground`}
+          >
+            <span aria-hidden className="h-px w-8 bg-teal" />
+            Pilares
+          </p>
+          <h2 className="pc-h2 mt-3 font-serif leading-[1.1]">
+            Os pilares da <em className="text-chrome">qualidade de software</em>
+          </h2>
+
+          <div className="pc-paineis">
+            {PILARES.map((p, i) => (
+              <article
+                key={p.curto}
+                id={`pc-painel-${i}`}
+                role="tabpanel"
+                aria-roledescription="slide"
+                aria-labelledby={`pc-item-${i}`}
+                data-ativo={ativo === i ? "" : undefined}
+                className="pc-painel"
+              >
+                <p
+                  className={`pc-etapa pc-num ${MONO} text-[11px] uppercase tracking-[0.2em] text-muted-foreground`}
                 >
-                  Ver no método <ArrowUpRight className="h-4 w-4" />
-                </button>
-              )}
-            </>
-          </DialogPrimitive.Content>
-        </DialogPrimitive.Portal>
-      </DialogPrimitive.Root>
+                  Pilar {dois(i)} / 07
+                </p>
+                <h3 className="pc-etapa pc-titulo mt-3 font-serif">{p.titulo}</h3>
+                <p className="pc-etapa pc-descricao mt-5 font-light text-muted-foreground">
+                  {p.descricao}
+                </p>
+                <div className="pc-etapa pc-grupos mt-7">
+                  <div>
+                    <p className={`${MONO} pc-rotulo`}>Onde atua</p>
+                    <ul className="pc-pills">
+                      {p.atua.map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  {p.ferramentas && (
+                    <div>
+                      <p className={`${MONO} pc-rotulo`}>Ferramentas</p>
+                      <ul className="pc-pills">
+                        {p.ferramentas.map((t) => (
+                          <li key={t}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        {/* Navegação única, no rodapé do palco */}
+        <nav aria-label="Navegação dos pilares" className="pc-nav">
+          <button type="button" onClick={anterior} aria-label="Pilar anterior" className="pc-seta">
+            <ChevronLeft className="h-5 w-5" strokeWidth={1.5} />
+          </button>
+          <div role="tablist" aria-label="Pilares" className="pc-itens" onMouseLeave={sairDaBarra}>
+            {PILARES.map((p, i) => (
+              <button
+                key={p.curto}
+                type="button"
+                role="tab"
+                data-item={i}
+                id={`pc-item-${i}`}
+                aria-selected={ativo === i}
+                aria-controls={`pc-painel-${i}`}
+                tabIndex={ativo === i ? 0 : -1}
+                onMouseEnter={() => entrar(i)}
+                onClick={() => fixar(i)}
+                onKeyDown={teclar}
+                className="pc-item"
+              >
+                <span className={`${MONO} pc-item-num`}>{dois(i)}</span>
+                <span className="pc-item-nome">{p.curto}</span>
+                {/* Linha que enche até o próximo pilar */}
+                <span aria-hidden className="pc-item-linha">
+                  <i
+                    key={`${ativo}-${correndo}`}
+                    data-correndo={ativo === i && correndo ? "" : undefined}
+                  />
+                </span>
+              </button>
+            ))}
+          </div>
+          {/* Celular: só o contador e a linha */}
+          <span aria-hidden className={`pc-contador ${MONO}`}>
+            {dois(ativo)} / 07
+            <span className="pc-item-linha">
+              <i key={`c-${ativo}-${correndo}`} data-correndo={correndo ? "" : undefined} />
+            </span>
+          </span>
+          <button type="button" onClick={proximo} aria-label="Próximo pilar" className="pc-seta">
+            <ChevronRight className="h-5 w-5" strokeWidth={1.5} />
+          </button>
+        </nav>
+      </div>
     </section>
   );
 }

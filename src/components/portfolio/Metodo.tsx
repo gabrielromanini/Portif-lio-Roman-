@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import {
   BarChart3,
   Check,
-  Compass,
   Gauge,
   Handshake,
   Layers,
@@ -11,11 +10,12 @@ import {
   ShieldCheck,
   Target,
   TrendingDown,
+  Users,
 } from "lucide-react";
 // Abas do Método: cada uma junta uma ou mais partes (as "seções" são os ids
 // usados pelos links "Ver no método" dos pilares).
 const ABAS = [
-  { id: "estrategia", label: "Estratégia", secoes: ["shift-left", "piramide"] },
+  { id: "estrategia", label: "Estratégia", secoes: ["shift-left"] },
   { id: "testes", label: "Testes", secoes: ["heuristicas", "tipos"] },
   { id: "produto-aba", label: "Produto", secoes: ["produto"] },
   { id: "metricas-aba", label: "Métricas", secoes: ["metricas", "quality-gates"] },
@@ -35,26 +35,27 @@ export function irParaMetodo(secao: string) {
   window.dispatchEvent(new CustomEvent(EVENTO_METODO, { detail: secao }));
 }
 
+// Copy em primeira pessoa (escolha do Gabriel para esta seção): o que ele leva para o time.
 const WHY = [
   {
     icon: TrendingDown,
-    title: "Defeito barato é defeito cedo",
-    text: "Um problema encontrado no refinamento custa uma conversa. O mesmo problema em produção custa retrabalho, suporte, reputação e às vezes clientes.",
+    title: "Bug resolvido antes de existir",
+    text: "Entro desde o refinamento, levantando riscos e critérios de aceite antes da primeira linha de código. O problema que custaria retrabalho em produção vira uma conversa de cinco minutos.",
   },
   {
     icon: Rocket,
-    title: "Velocidade com segurança",
-    text: "Qualidade não freia o time. Com testes confiáveis e critérios claros, o time entrega mais rápido porque para de apagar incêndio.",
+    title: "Mais velocidade, não menos",
+    text: "Monto automação de ponta a ponta com Cypress, Playwright, Postman e k6, rodando no pipeline. O time para de apagar incêndio e entrega mais rápido, com segurança.",
   },
   {
-    icon: Compass,
-    title: "O olhar de quem usa",
-    text: "O QA questiona o que ninguém perguntou: e se o usuário fizer diferente? E se a rede cair? E se o dado vier vazio? É aí que moram os bugs.",
+    icon: Users,
+    title: "Qualidade que fica no time",
+    text: "Estruturo áreas de QA do zero, formo Quality Champions e treino as squads. A qualidade deixa de depender de uma pessoa e vira cultura.",
   },
   {
     icon: BarChart3,
-    title: "Decisão com dados",
-    text: "Métricas de qualidade mostram onde está o risco real, e transformam a pergunta “está pronto para subir?” em algo objetivo.",
+    title: "Decisão com dados e IA",
+    text: "Trago métricas que mostram onde está o risco real e IA aplicada (GenAI, LLM e MCP) para acelerar análises e cenários de teste. “Está pronto para subir?” passa a ter resposta objetiva.",
   },
 ];
 
@@ -67,25 +68,18 @@ const PHASES = [
   "Produção",
 ];
 
-const PAPEIS = ["Produto", "Design", "Desenvolvimento", "QA", "Liderança"];
+// Abaixo de 1024px as 6 colunas não cabem os nomes inteiros (quebravam no meio da
+// palavra): aparece a abreviação, e o nome completo fica para leitores de tela.
+const PHASES_CURTAS: Record<string, string> = {
+  Descoberta: "Desc.",
+  Refinamento: "Refin.",
+  Desenvolvimento: "Dev",
+  "Code review": "Review",
+  Deploy: "Deploy",
+  Produção: "Prod.",
+};
 
-const PYRAMID = [
-  {
-    name: "E2E",
-    width: "w-[38%]",
-    desc: "Poucos e valiosos. Cobrem as jornadas críticas do usuário de ponta a ponta, com Cypress ou Playwright.",
-  },
-  {
-    name: "Integração & API",
-    width: "w-[66%]",
-    desc: "Validam contratos, regras de negócio e a conversa entre serviços. Rápidos e muito estáveis.",
-  },
-  {
-    name: "Unitários",
-    width: "w-full",
-    desc: "A base: muitos, rápidos e baratos. Dão feedback em segundos para quem está desenvolvendo.",
-  },
-];
+const PAPEIS = ["Produto", "Design", "Desenvolvimento", "QA", "Liderança"];
 
 const HEURISTICS = [
   {
@@ -399,8 +393,11 @@ export function MetodoSections() {
           <div className="card-chrome overflow-hidden rounded-2xl p-6 sm:p-10">
             <div className="grid grid-cols-6 gap-1 text-center text-[10px] uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">
               {PHASES.map((p) => (
-                <span key={p} className="break-words">
-                  {p}
+                <span key={p}>
+                  <span aria-hidden className="lg:hidden">
+                    {PHASES_CURTAS[p]}
+                  </span>
+                  <span className="max-lg:sr-only">{p}</span>
                 </span>
               ))}
             </div>
@@ -442,45 +439,6 @@ export function MetodoSections() {
                 </li>
               ))}
             </ul>
-          </div>
-        </Section>
-
-        {/* 03 PIRÂMIDE */}
-        <Section
-          id="piramide"
-          title="A proporção certa de cada teste"
-          intro="A pirâmide de testes organiza a estratégia de automação: muitos testes rápidos e baratos na base, e poucos testes lentos e caros no topo. Assim o feedback é rápido e a suíte continua estável."
-        >
-          <div className="grid items-center gap-12 md:grid-cols-2">
-            <div className="flex flex-col items-center gap-2">
-              {PYRAMID.map((l, i) => (
-                <div
-                  key={l.name}
-                  className={`${l.width} flex h-20 items-center justify-center text-center text-sm font-medium uppercase tracking-[0.18em] text-[#111316]`}
-                  style={{
-                    clipPath:
-                      i === 0
-                        ? "polygon(50% 0, 100% 100%, 0 100%)"
-                        : "polygon(8% 0, 92% 0, 100% 100%, 0 100%)",
-                    background: `linear-gradient(180deg, ${["#ffffff", "#dfe2e6", "#bfc4ca"][i]}, ${["#c9cdd3", "#aeb3ba", "#8f949c"][i]})`,
-                    paddingTop: i === 0 ? "1.75rem" : undefined,
-                  }}
-                >
-                  {l.name}
-                </div>
-              ))}
-              <p className="mt-4 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                + testes exploratórios em todas as camadas
-              </p>
-            </div>
-            <div className="space-y-8">
-              {PYRAMID.map((l) => (
-                <div key={l.name} className="border-l border-white/15 pl-6">
-                  <h3 className="titulo-card font-serif text-2xl text-chrome">{l.name}</h3>
-                  <p className="mt-2 font-light leading-relaxed text-muted-foreground">{l.desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </Section>
       </Painel>
@@ -766,17 +724,17 @@ export function MetodoSections() {
   );
 }
 
-/** "Por que ter um engenheiro de qualidade no time": seção própria, logo depois do Sobre. */
+/** "O que eu levo para o seu time": seção própria, logo depois do Sobre. */
 export function PorQueQaSection() {
   return (
     <Section
       id="por-que"
       title={
         <>
-          Por que ter um <em className="text-chrome">engenheiro de qualidade</em> no time
+          O que eu levo para o <em className="text-chrome">seu time</em>
         </>
       }
-      intro="Um QA não está ali só para encontrar bugs. Está para evitar que eles nasçam, dar confiança para o time entregar e garantir que o software resolve o problema de quem usa."
+      intro="Há mais de 8 anos estruturo qualidade em times ágeis de alta escala. Na prática: menos bug em produção, entregas mais rápidas e um time que confia no que sobe."
     >
       <div className="grid gap-5 sm:grid-cols-2">
         {WHY.map(({ icon: Icon, title, text }) => (
