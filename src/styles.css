@@ -1318,6 +1318,29 @@
     transform: translateY(-50%);
   }
 }
+/* Tablets e telas estreitas (768 a 1100px): os 7 nomes não cabem na barra; ela vira
+   o contador ‹ 03 / 07 ›, como no celular */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .pc-itens {
+    display: none;
+  }
+  .pc-contador {
+    position: relative;
+    display: block;
+    min-width: 96px;
+    padding-bottom: 10px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: rgba(236, 240, 241, 0.85);
+  }
+  .pc-contador .pc-item-linha {
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    opacity: 1;
+  }
+}
 /* Telas baixas (ex.: 1366x768): título e espaços limitados também pela altura */
 @media (min-width: 768px) and (max-height: 860px) {
   .pc-titulo {
@@ -1466,10 +1489,11 @@ html:not(.js) .pc-painel {
   visibility: visible;
   margin-top: 3rem;
 }
-html:not(.js) .pc-etapa {
+html:not(.js) .pc-painel .pc-etapa {
   opacity: 1;
   transform: none;
   filter: none;
+  animation: none;
 }
 html:not(.js) .pc-num {
   display: block;
