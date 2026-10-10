@@ -122,7 +122,7 @@ function useMenuAoRolar() {
  * classe não tem efeito.
  */
 /**
- * Endereço limpo: os links internos (menu, logo, "Ver trajetória"…) rolam até a
+ * Endereço limpo: os links internos (menu, logo, "Conhecer meu método"…) rolam até a
  * seção sem escrever "#sobre" no endereço, que fica sempre gabrielromanini.com.br.
  * A rolagem é feita aqui (pelo Lenis, ou direta com movimento reduzido), respeitando
  * o scroll-margin de cada seção; o logo (#top) volta ao início da página.

@@ -29,8 +29,8 @@ site-gabriel/
 │   │   ├── Layout.tsx       menu, rodapé, fontes e o fundo da página
 │   │   ├── Profundidade.tsx névoa em parallax e grão de filme do fundo
 │   │   ├── Pilares.tsx      os 7 pilares: carrossel com colunas 3D (cards no celular)
-│   │   ├── Metodo.tsx       "Como a qualidade é construída" (6 abas) e "O que eu levo para o seu time"
-│   │   ├── Camadas.tsx      a pirâmide de testes que se monta ao rolar
+│   │   ├── Metodo.tsx       "Como a qualidade é construída" (pirâmide e 6 abas) e "O que eu levo para o seu time"
+│   │   ├── Camadas.tsx      a pirâmide de testes que se monta ao rolar (dentro do Método)
 │   │   └── Fundos.tsx       fundo do topo, linhas dos Pilares e a linha da Trajetória
 │   ├── lib/
 │   │   ├── rolagem.ts       GSAP, ScrollTrigger e Lenis
@@ -46,7 +46,7 @@ site-gabriel/
 | O quê | Onde |
 |---|---|
 | Textos do topo, Sobre, Expertise, Trajetória e Contato | `src/routes/index.tsx` |
-| Os 7 pilares (título, descrição, onde atua, ferramentas) | `src/components/portfolio/Pilares.tsx`, constante `PILARES` |
+| Os 7 pilares (título, descrição, benefícios, ferramentas) | `src/components/portfolio/Pilares.tsx`, constante `PILARES` |
 | Seção Método e "O que eu levo para o seu time" | `src/components/portfolio/Metodo.tsx` |
 | Pirâmide de testes | `src/components/portfolio/Camadas.tsx` |
 | Itens do menu | `Layout.tsx`, constante `NAV` |

@@ -8,6 +8,18 @@ Como a gente tem trabalhado:
 - Os textos do site são impessoais ("estruturando", "desenvolvendo"). A exceção é "O que eu levo para o seu time", em primeira pessoa por escolha do Gabriel.
 - Imagens novas vão em `src/assets/`, com nome minúsculo e sem espaço. No servidor, maiúscula e minúscula fazem diferença.
 
+## 09/10/2026: pirâmide no Método e pilares com benefícios
+
+- A pirâmide de testes subiu para dentro do Método, logo abaixo do texto de abertura; as abas vêm depois dela.
+- Os pilares trocaram "Onde atua" por "Benefícios". Shift Left perdeu "Quality Champions" e ganhou "Prevenção de falhas". Testes funcionais ficou só com o texto e um botão "Conhecer mais", que leva à parte dos tipos de teste no Método. Automação ganhou o JMeter nas ferramentas; Quality Gates e IA aplicada ficaram sem ferramentas.
+- Botão "Voltar ao topo" entre o Método e a Experiência.
+- No topo, "Ver trajetória" virou "Conhecer meu método", levando ao Método.
+- A pirâmide monta com menos rolagem: o pin caiu de 2,5 para 1,2 tela, e no celular ela termina de montar mais cedo.
+- Trocar de aba no Método não faz mais a tela pular: a barra de abas fica no mesmo lugar.
+- As bordas de cima e de baixo dos Pilares ficaram suaves (a névoa da cena terminava numa linha).
+- O código de exemplo da aba Automação ficou em verde-petróleo.
+- Aba Cultura: as barras viraram o time em pessoas (Produto, Design, Dev, QA, Liderança). No modelo tradicional só o QA acende; na cultura de qualidade todos acendem. Os quatro itens continuam embaixo.
+
 ## 07 a 09/10/2026: rolagem, profundidade e os Pilares em carrossel
 
 Essa rodada mexeu no visual do site inteiro, com a ideia de usar mais interação ligada à rolagem (a referência inicial foi o site nfinitepaper.com), mantendo a paleta preta, prata e verde-petróleo.
@@ -64,7 +76,6 @@ Coisas testadas que não ficaram nessa fase: números de destaque abaixo do topo
 
 ## Pendências
 
-- Ferramentas dos pilares Engenharia, Shift Left, Testes funcionais e Colaboração. Hoje o grupo "Ferramentas" não aparece neles.
 - Testar a cena 3D (colunas e pirâmide) no Safari, num Mac ou iPhone. O WebKit do Playwright no Windows não renderiza 3D.
 - Contato direto: só há LinkedIn. Um botão de e-mail ou WhatsApp tende a converter mais, falta decidir qual.
 - Imagem de compartilhamento (`og:image`) e link do GitHub no site.

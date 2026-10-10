@@ -7,8 +7,9 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { gsap } from "@/lib/rolagem";
+import { irParaMetodo } from "./Metodo";
 
 const MONO = "font-['JetBrains_Mono',ui-monospace,monospace]";
 
@@ -18,12 +19,12 @@ type Pilar = {
   /** Título com a palavra-chave em <em> (prata, itálico). */
   titulo: ReactNode;
   descricao: string;
-  /** "Onde atua": os tópicos do pilar. */
-  atua: string[];
+  /** O que o pilar traz para o produto e o time. */
+  beneficios?: string[];
   /** Só os pilares que têm ferramentas cadastradas; nos outros o grupo não aparece. */
   ferramentas?: string[];
-  /** Seção do Método com mais detalhes. */
-  metodo?: string;
+  /** Parte do Método aberta pelo botão "Conhecer mais" (só quando há). */
+  conhecerMais?: string;
 };
 
 // Da esquerda (01) para a direita (07).
@@ -37,13 +38,13 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Qualidade não é uma etapa no fim do processo: é um critério de engenharia presente em cada decisão, do desenho da solução ao acompanhamento em produção.",
-    atua: [
-      "Código pensado para ser testado",
-      "Estratégia antes de ferramenta",
-      "Decisão com dados",
-      "O usuário no centro",
+    beneficios: [
+      "Código limpo e fácil de manter",
+      "Menos bugs chegando ao usuário",
+      "Software seguro e acessível desde o início",
+      "Evolução sem quebrar o que já funciona",
+      "Menos retrabalho e dívida técnica",
     ],
-    metodo: "metodo",
   },
   {
     curto: "Shift Left",
@@ -54,13 +55,12 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Antecipação da qualidade para as primeiras etapas do desenvolvimento, reduzindo riscos e custos de correção.",
-    atua: [
+    beneficios: [
       "QA no refinamento",
       "Critérios de aceite claros",
-      "Quality Champions",
+      "Prevenção de falhas",
       "Feedback rápido",
     ],
-    metodo: "shift-left",
   },
   {
     curto: "Testes funcionais",
@@ -71,8 +71,7 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Cada risco pede um tipo de teste. A combinação certa garante que o produto faz o que deveria, do jeito que o usuário espera.",
-    atua: ["Exploratório", "Regressivo", "Smoke", "Sanidade", "Usabilidade", "Integração"],
-    metodo: "tipos",
+    conhecerMais: "tipos",
   },
   {
     curto: "Automação",
@@ -83,9 +82,13 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Automação tratada como código de produção: legível, reutilizável e integrada ao pipeline, cobrindo interface, API e performance.",
-    atua: ["E2E", "API", "Performance", "Pipeline"],
-    ferramentas: ["Cypress", "Playwright", "Postman", "k6"],
-    metodo: "automacao",
+    beneficios: [
+      "Regressão em minutos, não em dias",
+      "Feedback a cada pull request",
+      "Entregas mais frequentes e seguras",
+      "Mais tempo para testes exploratórios",
+    ],
+    ferramentas: ["Cypress", "Playwright", "Postman", "k6", "JMeter"],
   },
   {
     curto: "Quality Gates",
@@ -96,9 +99,12 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Critérios automatizados de qualidade integrados ao CI/CD para impedir que alterações com falhas conhecidas avancem no fluxo de entrega, desde o upstream até o downstream.",
-    atua: ["Do upstream ao downstream", "Critérios objetivos", "Resultados visíveis"],
-    ferramentas: ["Git", "CI/CD", "Cypress", "Playwright", "Postman", "k6", "SonarQube", "Allure"],
-    metodo: "quality-gates",
+    beneficios: [
+      "Erros barrados antes da produção",
+      "Métricas de antes e depois dos gates",
+      "Deploy com confiança",
+      "Qualidade visível para todo o time",
+    ],
   },
   {
     curto: "IA aplicada",
@@ -109,13 +115,13 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Utilização de IA, LLMs e agentes para apoiar a análise de requisitos, a geração de cenários, a criação de testes e a identificação estratégica de riscos.",
-    atua: [
+    beneficios: [
+      "Geração de planos de teste",
       "Análise de requisitos",
-      "Geração de cenários",
-      "Criação de testes",
-      "Riscos estratégicos",
+      "Cenários e massa de dados",
+      "Mapeamento de riscos",
+      "Velocidade na automação de testes",
     ],
-    ferramentas: ["GenAI", "LLMs", "Agentes", "MCP"],
   },
   {
     curto: "Colaboração",
@@ -126,8 +132,10 @@ const PILARES: Pilar[] = [
     ),
     descricao:
       "Comunicação é a soft skill mais importante de um engenheiro de software: tanto para entender o produto e o cliente quanto para antecipar possíveis problemas e economizar tempo.",
-    atua: ["Entender o produto e o cliente", "Antecipar problemas", "Economizar tempo"],
-    metodo: "produto",
+    beneficios: [
+      "Comunicação constante com o time",
+      "Otimização do tempo de desenvolvimento e testes",
+    ],
   },
 ];
 
@@ -505,26 +513,41 @@ export function PilaresSection() {
                 <p className="pc-etapa pc-descricao mt-5 font-light text-muted-foreground">
                   {p.descricao}
                 </p>
-                <div className="pc-etapa pc-grupos mt-7">
-                  <div>
-                    <p className={`${MONO} pc-rotulo`}>Onde atua</p>
-                    <ul className="pc-pills">
-                      {p.atua.map((t) => (
-                        <li key={t}>{t}</li>
-                      ))}
-                    </ul>
+                {(p.beneficios || p.ferramentas) && (
+                  <div className="pc-etapa pc-grupos mt-7">
+                    {p.beneficios && (
+                      <div>
+                        <p className={`${MONO} pc-rotulo`}>Benefícios</p>
+                        <ul className="pc-pills">
+                          {p.beneficios.map((t) => (
+                            <li key={t}>{t}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {p.ferramentas && (
+                      <div>
+                        <p className={`${MONO} pc-rotulo`}>Ferramentas</p>
+                        <ul className="pc-pills">
+                          {p.ferramentas.map((t) => (
+                            <li key={t}>{t}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                  {p.ferramentas && (
-                    <div>
-                      <p className={`${MONO} pc-rotulo`}>Ferramentas</p>
-                      <ul className="pc-pills">
-                        {p.ferramentas.map((t) => (
-                          <li key={t}>{t}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
+                )}
+                {p.conhecerMais && (
+                  <div className="pc-etapa mt-8">
+                    <button
+                      type="button"
+                      onClick={() => irParaMetodo(p.conhecerMais!)}
+                      className="btn-steel-dark inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-medium"
+                    >
+                      Conhecer mais <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </article>
             ))}
           </div>

@@ -10,8 +10,11 @@ import {
   ShieldCheck,
   Target,
   TrendingDown,
+  UserRound,
   Users,
 } from "lucide-react";
+import { rolarAte } from "@/lib/rolagem";
+import { CamadasSection } from "./Camadas";
 // Abas do Método: cada uma junta uma ou mais partes (as "seções" são os ids
 // usados pelos links "Ver no método" dos pilares).
 const ABAS = [
@@ -80,6 +83,41 @@ const PHASES_CURTAS: Record<string, string> = {
 };
 
 const PAPEIS = ["Produto", "Design", "Desenvolvimento", "QA", "Liderança"];
+// "Desenvolvimento" não cabe na coluna (nem no desktop, com as duas fileiras lado a lado)
+const PAPEIS_CURTOS: Record<string, string> = { Desenvolvimento: "Dev" };
+
+/** Uma fileira do time: cada papel é uma pessoa, acesa (com qualidade) ou apagada. */
+function Time({ acesos }: { acesos: (papel: string) => boolean }) {
+  return (
+    <ul className="grid grid-cols-5 gap-1">
+      {PAPEIS.map((p) => {
+        const aceso = acesos(p);
+        return (
+          <li key={p} className="flex flex-col items-center gap-2.5">
+            <span
+              className={`grid h-12 w-12 place-items-center rounded-full border transition-colors sm:h-14 sm:w-14 ${
+                aceso
+                  ? "border-teal/70 bg-teal/[0.12] text-teal shadow-[0_0_22px_rgba(0,161,156,0.45),inset_0_0_12px_rgba(0,161,156,0.25)]"
+                  : "border-white/10 bg-white/[0.02] text-white/25"
+              }`}
+            >
+              <UserRound className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.4} />
+            </span>
+            <span
+              className={`text-center text-[10px] uppercase tracking-[0.12em] sm:text-xs ${
+                aceso ? "text-foreground" : "text-muted-foreground/60"
+              }`}
+            >
+              <span aria-hidden={PAPEIS_CURTOS[p] ? true : undefined}>{PAPEIS_CURTOS[p] ?? p}</span>
+              {PAPEIS_CURTOS[p] && <span className="sr-only">{p}</span>}
+              <span className="sr-only">{aceso ? " (com qualidade)" : ""}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 const HEURISTICS = [
   {
@@ -291,6 +329,22 @@ function useAbasNoCelular(aba: string) {
   return { ref, aoRolar, mascara };
 }
 
+/**
+ * Trocar de aba muda a altura da página (e a pirâmide, acima, recalcula o pin), o
+ * que fazia a tela pular. Por um instante depois da troca, a barra de abas é
+ * mantida no mesmo ponto da tela em que estava no clique.
+ */
+function segurarNaTela(el: HTMLElement) {
+  const topo = el.getBoundingClientRect().top;
+  const fim = performance.now() + 900;
+  const quadro = () => {
+    const desvio = el.getBoundingClientRect().top - topo;
+    if (Math.abs(desvio) > 0.5) rolarAte(window.scrollY + desvio, true);
+    if (performance.now() < fim) requestAnimationFrame(quadro);
+  };
+  requestAnimationFrame(quadro);
+}
+
 function Painel({ id, aba, children }: { id: AbaId; aba: AbaId; children: React.ReactNode }) {
   // Painéis fechados continuam no HTML (hidden), só não aparecem.
   return (
@@ -305,17 +359,26 @@ export function MetodoSections() {
   const [aba, setAba] = useState<AbaId>("estrategia");
   const abas = useAbasNoCelular(aba);
 
+  function trocarAba(id: AbaId) {
+    if (id === aba) return;
+    if (abas.ref.current) segurarNaTela(abas.ref.current);
+    setAba(id);
+  }
+
   // Links "Ver no método" (e endereços com #parte): abre a aba certa e rola até a parte.
   useEffect(() => {
     function ir(secao: string) {
       const dona = ABAS.find((a) => (a.secoes as readonly string[]).includes(secao));
       if (dona) setAba(dona.id);
       if (!dona && secao !== "metodo") return;
-      // Espera a aba aparecer antes de rolar.
+      // Espera a aba aparecer antes de rolar (pelo Lenis, respeitando o scroll-margin).
       requestAnimationFrame(() =>
-        requestAnimationFrame(() =>
-          document.getElementById(secao)?.scrollIntoView({ behavior: "smooth" }),
-        ),
+        requestAnimationFrame(() => {
+          const alvo = document.getElementById(secao);
+          if (!alvo) return;
+          const margem = parseFloat(getComputedStyle(alvo).scrollMarginTop) || 0;
+          rolarAte(Math.max(0, alvo.getBoundingClientRect().top + window.scrollY - margem));
+        }),
       );
     }
     const aoPedir = (e: Event) => ir((e as CustomEvent<string>).detail);
@@ -329,17 +392,14 @@ export function MetodoSections() {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
     const atual = ABAS.findIndex((a) => a.id === aba);
     const prox = ABAS[(atual + (e.key === "ArrowRight" ? 1 : ABAS.length - 1)) % ABAS.length];
-    setAba(prox.id);
-    document.getElementById(`aba-${prox.id}`)?.focus();
+    trocarAba(prox.id);
+    document.getElementById(`aba-${prox.id}`)?.focus({ preventScroll: true });
   }
 
   return (
     <>
       {/* ABERTURA DO MÉTODO */}
-      <section
-        id="metodo"
-        className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-16 max-md:pt-14 sm:px-6"
-      >
+      <section id="metodo" className="mx-auto max-w-6xl scroll-mt-20 px-4 max-md:pt-14 sm:px-6">
         <div>
           <h2 className="luz-passando w-fit max-w-4xl text-5xl leading-[1.02] sm:text-7xl">
             Como a <span className="text-chrome text-shine">qualidade</span> é construída
@@ -350,12 +410,18 @@ export function MetodoSections() {
             dia a dia dos times.
           </p>
         </div>
+      </section>
+
+      {/* Pirâmide de testes, entre a abertura e as abas */}
+      <CamadasSection />
+
+      <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div
           ref={abas.ref}
           onScroll={abas.aoRolar}
           role="tablist"
           aria-label="Partes do método"
-          className={`-mx-4 mt-12 flex gap-3 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 max-md:snap-x max-md:snap-mandatory [&::-webkit-scrollbar]:hidden ${abas.mascara}`}
+          className={`-mx-4 flex gap-3 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 max-md:snap-x max-md:snap-mandatory [&::-webkit-scrollbar]:hidden ${abas.mascara}`}
         >
           {ABAS.map((a) => {
             const ativa = a.id === aba;
@@ -368,7 +434,7 @@ export function MetodoSections() {
                 aria-selected={ativa}
                 aria-controls={`painel-${a.id}`}
                 tabIndex={ativa ? 0 : -1}
-                onClick={() => setAba(a.id)}
+                onClick={() => trocarAba(a.id)}
                 onKeyDown={mover}
                 className={`shrink-0 whitespace-nowrap rounded-full border bg-white/[0.03] px-4 py-1.5 text-xs uppercase tracking-[0.15em] transition-colors max-md:inline-flex max-md:min-h-11 max-md:snap-center max-md:items-center ${
                   ativa
@@ -381,7 +447,7 @@ export function MetodoSections() {
             );
           })}
         </div>
-      </section>
+      </div>
 
       <Painel id="estrategia" aba={aba}>
         {/* 02 SHIFT LEFT */}
@@ -652,8 +718,19 @@ export function MetodoSections() {
                 <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
                 <span className="ml-3 text-xs text-muted-foreground">Playwright · Page Object</span>
               </div>
-              <pre className="overflow-x-auto p-5 text-[12.5px] leading-relaxed text-[#d7dadf] font-['JetBrains_Mono',ui-monospace,monospace]">
-                <code>{PAGE_OBJECT_CODE}</code>
+              {/* Código em verde-petróleo; comentários (nomes dos arquivos) em cinza */}
+              <pre className="overflow-x-auto p-5 text-[12.5px] leading-relaxed text-teal font-['JetBrains_Mono',ui-monospace,monospace]">
+                <code>
+                  {PAGE_OBJECT_CODE.split("\n").map((linha, i) => (
+                    <span
+                      key={i}
+                      className={linha.trimStart().startsWith("//") ? "text-muted-foreground" : ""}
+                    >
+                      {linha}
+                      {"\n"}
+                    </span>
+                  ))}
+                </code>
               </pre>
             </div>
           </div>
@@ -671,36 +748,25 @@ export function MetodoSections() {
           intro={`Um QA sozinho não garante qualidade, e nem deveria. Qualidade de verdade acontece quando produto, design, desenvolvimento e liderança compartilham o mesmo critério do que é "pronto". O papel do engenheiro de qualidade é espalhar esse conhecimento pelo time, até que a qualidade deixe de depender de uma pessoa.`}
         >
           <div className="card-chrome overflow-hidden rounded-2xl p-6 sm:p-10">
-            <div className="grid grid-cols-5 gap-1 text-center text-[10px] uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">
-              {PAPEIS.map((p) => (
-                <span key={p} className="break-words">
-                  {p}
-                </span>
-              ))}
-            </div>
-
-            <div className="mt-8 space-y-8">
+            {/* Mesmo time duas vezes: no tradicional só o QA "acende"; na cultura, todos */}
+            <div className="grid gap-10 md:grid-cols-2 md:gap-14">
               <div>
-                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                <p className="mb-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
                   Modelo tradicional
                 </p>
-                <div className="relative h-2 rounded-full bg-white/5">
-                  {/* Só a coluna QA (4ª de 5) */}
-                  <div className="absolute inset-y-0 left-[60%] right-[20%] rounded-full bg-white/25" />
-                </div>
-                <p className="mt-3 text-sm font-light text-muted-foreground">
+                <Time acesos={(p) => p === "QA"} />
+                <p className="mt-6 text-sm font-light text-muted-foreground">
                   A qualidade fica com uma pessoa, e vira gargalo no fim do processo.
                 </p>
               </div>
               <div>
-                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-foreground">
+                <p className="mb-6 text-xs uppercase tracking-[0.25em] text-foreground">
                   Cultura de qualidade
                 </p>
-                <div className="relative h-2 rounded-full bg-white/5">
-                  <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-[linear-gradient(90deg,#ffffff,#c9cdd3_45%,#6f747c)] shadow-[0_0_18px_rgba(220,225,235,0.45)]" />
-                </div>
-                <p className="mt-3 text-sm font-light text-muted-foreground">
-                  Cada papel assume sua parte, e o QA atua como referência e multiplicador.
+                <Time acesos={() => true} />
+                <p className="mt-6 text-sm font-light text-muted-foreground">
+                  Qualidade é dever de todos: cada papel assume sua parte, e o QA atua como
+                  referência e multiplicador.
                 </p>
               </div>
             </div>

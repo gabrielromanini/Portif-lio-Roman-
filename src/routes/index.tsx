@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/gabriel-hero.jpeg";
 import {
   ArrowRight,
+  ArrowUp,
   ArrowUpRight,
   Bot,
   GitBranch,
@@ -12,7 +13,6 @@ import {
 } from "lucide-react";
 import { LINKEDIN_URL, SITE_NAME } from "@/lib/site";
 import { Eyebrow, FONTS_LINKS, PageShell } from "@/components/portfolio/Layout";
-import { CamadasSection } from "@/components/portfolio/Camadas";
 import { MetodoSections, PorQueQaSection } from "@/components/portfolio/Metodo";
 import { PilaresSection } from "@/components/portfolio/Pilares";
 import {
@@ -160,10 +160,10 @@ function Index() {
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
-                href="#trajetoria"
+                href="#metodo"
                 className="btn-steel-dark inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-medium"
               >
-                Ver trajetória <ArrowRight className="h-4 w-4" />
+                Conhecer meu método <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href={LINKEDIN_URL}
@@ -282,7 +282,15 @@ function Index() {
         <MetodoSections />
       </div>
 
-      <CamadasSection />
+      {/* Voltar ao topo, entre o Método e a Experiência (o #top é tratado por useEnderecoLimpo) */}
+      <div className="flex justify-center px-4 pb-16 max-md:pb-6">
+        <a
+          href="#top"
+          className="btn-steel-dark inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-medium"
+        >
+          <ArrowUp className="h-4 w-4" /> Voltar ao topo
+        </a>
+      </div>
 
       <div className="relative pt-16 max-md:pt-0">
         <LinhaPista />

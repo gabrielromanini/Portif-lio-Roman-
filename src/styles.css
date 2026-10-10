@@ -1054,6 +1054,9 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* Some nas pontas: sem isso a borda da seção vira uma linha contra o resto da página */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 72%, transparent);
   background:
     linear-gradient(
       to bottom,

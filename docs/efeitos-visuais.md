@@ -8,7 +8,7 @@ Estado em 09/10/2026.
 
 A página é uma só (`src/routes/index.tsx`) e os links do menu apenas rolam até a seção.
 
-Ordem das seções: menu, topo, Pilares, Sobre, O que eu levo para o seu time, Expertise, Método, pirâmide de testes, Trajetória, Contato e rodapé.
+Ordem das seções: menu, topo, Pilares, Sobre, O que eu levo para o seu time, Expertise, Método (abertura, pirâmide de testes e abas), botão "Voltar ao topo", Trajetória, Contato e rodapé.
 
 | Onde | O que acontece | Arquivo |
 |---|---|---|
@@ -36,7 +36,7 @@ Algumas regras que valem para o site todo:
 
 O Lenis faz a rolagem suave e roda no mesmo relógio do GSAP, para que as animações presas à rolagem andem no mesmo quadro que a página. Com movimento reduzido, o Lenis não liga.
 
-Os links internos (menu, logo, "Ver trajetória") não passam pelo navegador: `useEnderecoLimpo`, em `Layout.tsx`, faz a rolagem até a seção e não escreve o `#sobre` no endereço, que fica sempre `gabrielromanini.com.br`. Quem abre um link recebido com `#seção` continua indo direto para ela. O `<head>` tem o `canonical` apontando para o endereço oficial (`SITE_URL`, em `src/lib/site.ts`).
+Os links internos (menu, logo, "Conhecer meu método", "Voltar ao topo") não passam pelo navegador: `useEnderecoLimpo`, em `Layout.tsx`, faz a rolagem até a seção e não escreve o `#sobre` no endereço, que fica sempre `gabrielromanini.com.br`. Quem abre um link recebido com `#seção` continua indo direto para ela. O `<head>` tem o `canonical` apontando para o endereço oficial (`SITE_URL`, em `src/lib/site.ts`).
 
 O `__root.tsx` põe a classe `js` no `<html>` antes da primeira pintura. O CSS usa essa classe para escolher entre a versão animada e a estática, então a página já nasce com a altura certa e não pula ao carregar.
 
@@ -44,19 +44,19 @@ O `__root.tsx` põe a classe `js` no `<html>` antes da primeira pintura. O CSS u
 
 No desktop é um carrossel. O texto do pilar fica à esquerda, sobre a cena, e embaixo há uma barra com setas e os sete nomes em botões. Sem interação, o carrossel passa sozinho a cada 7 segundos e a linha dentro do botão ativo mostra o tempo até o próximo. Passar o mouse num nome mostra aquele pilar e pausa; clicar fixa nele.
 
-Ao fundo ficam sete colunas de vidro feitas em CSS 3D. Cada coluna é montada com "caixas" de cinco faces (componente `Caixa`) e usa o mesmo material da pirâmide: borda verde-água fina e pontinhos. A coluna do pilar atual acende, a câmera gira de leve na direção dela e, enquanto a seção está na tela, a cena "respira" com uma oscilação lenta de 2 graus. Atrás das colunas há duas fileiras de colunas-fantasma, só um gradiente que some para cima, além de névoa e partículas (pontos e pequenos "x") num canvas.
+Ao fundo ficam sete colunas de vidro feitas em CSS 3D. Cada coluna é montada com "caixas" de cinco faces (componente `Caixa`) e usa o mesmo material da pirâmide: borda verde-água fina e pontinhos. A coluna do pilar atual acende, a câmera gira de leve na direção dela e, enquanto a seção está na tela, a cena "respira" com uma oscilação lenta de 2 graus. A névoa (`.pc-nevoa`) some em cima e embaixo, para a seção não terminar numa linha contra o resto da página. Atrás das colunas há duas fileiras de colunas-fantasma, só um gradiente que some para cima, além de névoa e partículas (pontos e pequenos "x") num canvas.
 
 A troca de pilar tem um tempo próprio: o texto que sai some em 350 ms, subindo e desfocando, e o novo entra em 550 ms. Antes de mudar esses tempos, veja as regras `.pc-etapa` em `styles.css`.
 
 No celular, os sete pilares viram cards em cascata. As colunas ficam presas ao fundo, apagadas, e o card que passa pelo meio da tela acende a coluna dele. Para isso o palco usa `overflow: clip` (com `hidden`, o fundo preso deixaria de funcionar).
 
-Os pilares Engenharia, Shift Left, Testes funcionais e Colaboração ainda não têm ferramentas cadastradas, então o grupo "Ferramentas" não aparece neles.
+Cada pilar mostra os grupos que tiver: "Benefícios" e, só na Automação, "Ferramentas". Testes funcionais não tem grupos; tem o botão "Conhecer mais", que abre a aba Testes do Método e rola até "Cada risco pede um tipo de teste" (`irParaMetodo`).
 
 ## Pirâmide de testes (`Camadas.tsx`)
 
-Título: "Estratégia inteligente, *menor custo*", com "Estratégia inteligente," sempre inteira na primeira linha.
+Fica dentro do Método, entre o texto de abertura ("Como a qualidade é construída") e as abas. Título: "Estratégia inteligente, *menor custo*", com "Estratégia inteligente," sempre inteira na primeira linha.
 
-A seção fica presa na tela (pin do ScrollTrigger) por 2,5 telas de rolagem, centralizada abaixo do menu. As três camadas descem e assentam da base para o topo, o texto da camada que está chegando acende ao lado, e no fim aparecem o brilho de trás e o selo "Quality gate aprovado".
+A seção fica presa na tela (pin do ScrollTrigger) por 1,2 tela de rolagem, centralizada abaixo do menu. As três camadas descem e assentam da base para o topo, o texto da camada que está chegando acende ao lado, e no fim aparecem o brilho de trás e o selo "Quality gate aprovado".
 
 As camadas saem de um único triângulo fatiado (`clip-path`), por isso as laterais ficam alinhadas. O material é vidro fosco (`backdrop-filter`) com pontinhos verde-petróleo mais densos na base, e o contorno é desenhado em SVG porque o `clip-path` corta a borda. No celular a pirâmide monta sem prender a tela.
 
@@ -98,6 +98,8 @@ Os títulos de seção têm uma faixa de luz que passa por dentro das letras a c
 ## Método (`Metodo.tsx`)
 
 São seis abas reais: Estratégia, Testes, Produto, Métricas, Automação e Cultura. Os painéis fechados continuam no HTML, então o conteúdo segue indexável. A função `irParaMetodo` abre a aba certa antes de rolar até uma parte; a lista de partes de cada aba fica em `ABAS`.
+
+Trocar de aba muda a altura da página e fazia a tela pular. `segurarNaTela` mantém a barra de abas no mesmo ponto da tela por 0,9 s depois do clique, enquanto a página e a pirâmide se reacomodam.
 
 ## Como testar
 

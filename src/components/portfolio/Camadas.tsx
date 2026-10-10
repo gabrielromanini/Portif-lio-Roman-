@@ -39,9 +39,9 @@ const DESKTOP = "(min-width: 768px) and (prefers-reduced-motion: no-preference)"
 const CELULAR = "(max-width: 767.98px) and (prefers-reduced-motion: no-preference)";
 
 /**
- * "Estratégia inteligente, menor custo": fechamento do Método. A pirâmide de testes se monta
+ * "Estratégia inteligente, menor custo": abre o Método, entre o texto de abertura e as abas. A pirâmide de testes se monta
  * camada por camada conforme a rolagem e termina no selo do quality gate.
- * - Desktop: o conteúdo fica preso, centralizado na área abaixo do menu, por 2,5
+ * - Desktop: o conteúdo fica preso, centralizado na área abaixo do menu, por 1,2
  *   telas de rolagem, e o texto da camada que está assentando acende do lado.
  *   Em telas baixas demais para centralizar, fica preso logo abaixo do menu.
  * - Celular: sem prender a tela; a pirâmide monta enquanto passa.
@@ -70,18 +70,18 @@ export function CamadasSection() {
           ? {
               trigger: palco,
               start: () => (cabeCentralizado() ? `center center+=${MENU / 2}` : `top ${MENU}px`),
-              end: "+=250%",
+              end: "+=120%",
               pin: true,
-              scrub: 0.6,
+              scrub: 0.35,
               invalidateOnRefresh: true,
             }
           : // Celular: a montagem acontece com a pirâmide e o selo inteiros na tela
-            // (começa quando o topo entra e termina com o selo ainda acima do rodapé).
+            // (começa quando o topo entra e termina com o centro dela pouco abaixo do meio).
             {
               trigger: q("[data-coluna-piramide]")[0],
-              start: "top 85%",
-              end: "bottom 80%",
-              scrub: 0.6,
+              start: "top 90%",
+              end: "center 55%",
+              scrub: 0.35,
             },
       });
 
@@ -123,8 +123,8 @@ export function CamadasSection() {
     mm.add(DESKTOP, () => montar(true));
     mm.add(CELULAR, () => montar(false));
 
-    // As abas do Método (logo acima) mudam a altura da página: recalcula onde o
-    // pin começa sempre que o conteúdo muda de tamanho.
+    // O que vem antes (e as abas do Método, logo abaixo) muda a altura da página:
+    // recalcula o pin sempre que o conteúdo muda de tamanho.
     let espera = 0;
     const obs = new ResizeObserver(() => {
       clearTimeout(espera);
@@ -140,7 +140,7 @@ export function CamadasSection() {
   }, []);
 
   return (
-    <section ref={secaoRef} id="camadas" className="relative scroll-mt-20 pb-28 max-md:pb-14">
+    <section ref={secaoRef} id="camadas" className="relative scroll-mt-20 pt-20 pb-24 max-md:pt-12 max-md:pb-20">
       <div
         data-palco
         className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 md:grid-cols-[1fr_1.1fr]"

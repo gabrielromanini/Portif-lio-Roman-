@@ -11,10 +11,10 @@ let instancia: Lenis | null = null;
 
 /**
  * Rola até `y` (px do topo da página): suave pelo Lenis quando ele está ligado;
- * direto com movimento reduzido.
+ * direto com movimento reduzido ou com `imediato`.
  */
-export function rolarAte(y: number) {
-  if (instancia) instancia.scrollTo(y);
+export function rolarAte(y: number, imediato = false) {
+  if (instancia) instancia.scrollTo(y, { immediate: imediato, force: true });
   else window.scrollTo({ top: y, behavior: "auto" });
 }
 
