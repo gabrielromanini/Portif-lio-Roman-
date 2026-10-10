@@ -145,7 +145,9 @@ export function CamadasSection() {
         data-palco
         className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 md:grid-cols-[1fr_1.1fr]"
       >
-        <div>
+        {/* min-w-0 + container: a largura vem da grade, nunca do título (que não
+            quebra a 1ª linha); o título mede a fonte pela largura da coluna */}
+        <div className="camadas-coluna min-w-0">
           <p className={`${MONO} text-xs uppercase tracking-[0.2em] text-muted-foreground`}>
             Quality stack{" "}
             {/* Contador só no desktop, onde a seção trava; no celular a pirâmide fica
@@ -158,7 +160,7 @@ export function CamadasSection() {
               /03
             </span>
           </p>
-          <h2 className="luz-passando mt-5 w-fit text-[38px] leading-[1.02] min-[400px]:text-5xl sm:text-6xl">
+          <h2 className="camadas-titulo luz-passando mt-5 w-fit leading-[1.02]">
             {/* Uma ideia por linha: "Estratégia inteligente," inteira em cima */}
             <span className="whitespace-nowrap">Estratégia inteligente,</span>
             <br />

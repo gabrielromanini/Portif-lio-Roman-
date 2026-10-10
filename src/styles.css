@@ -1503,6 +1503,16 @@ html:not(.js) .pc-marca {
   display: none;
 }
 
+/* Título da pirâmide: "Estratégia inteligente," fica inteira numa linha, então a
+   fonte acompanha a largura da coluna (a linha tem ~8,4 vezes o tamanho da fonte),
+   até 60px. Assim nunca passa da borda, em nenhum celular ou tablet. */
+.camadas-coluna {
+  container-type: inline-size;
+}
+.camadas-titulo {
+  font-size: min(60px, calc(100cqw / 8.8));
+}
+
 /* ——— Pirâmide "Estratégia inteligente, menor custo": vidro fosco com partículas petróleo ———
    Regra do vidro: nenhum ancestral das camadas pode ter opacity < 1, filter, mask ou
    will-change: filter (viram "backdrop root" e o desfoque para de ver o fundo). */
