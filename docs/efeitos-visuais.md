@@ -14,7 +14,7 @@ Ordem das seções: menu, topo, Pilares, Sobre, O que eu levo para o seu time, E
 |---|---|---|
 | Menu | Transparente no topo; depois de 40px vira vidro escuro, fica mais baixo e mostra a barra de progresso de leitura | `Layout.tsx` (`useMenuAoRolar`) |
 | Topo | Fundo "Silver Arrow" (aço escovado, faixa de luz e filetes), nome com reflexo no "Romanini", foto com moldura cromada | `index.tsx`, `Fundos.tsx` |
-| Pilares | Carrossel com colunas de vidro em 3D ao fundo; no celular, cards em cascata | `Pilares.tsx` |
+| Pilares | Carrossel com colunas de vidro em 3D ao fundo; no celular, só os cards em cascata, sem o fundo | `Pilares.tsx` |
 | Sobre | Título à esquerda e três parágrafos à direita | `index.tsx` |
 | Método | 6 abas | `Metodo.tsx` |
 | Pirâmide | Presa na tela enquanto as camadas se montam ao rolar | `Camadas.tsx` |
@@ -48,7 +48,7 @@ Ao fundo ficam sete colunas de vidro feitas em CSS 3D. Cada coluna é montada co
 
 A troca de pilar tem um tempo próprio: o texto que sai some em 350 ms, subindo e desfocando, e o novo entra em 550 ms. Antes de mudar esses tempos, veja as regras `.pc-etapa` em `styles.css`.
 
-No celular, os sete pilares viram cards em cascata. As colunas ficam presas ao fundo, apagadas, e o card que passa pelo meio da tela acende a coluna dele. Para isso o palco usa `overflow: clip` (com `hidden`, o fundo preso deixaria de funcionar).
+No celular, os sete pilares viram cards em cascata, sem o fundo animado: as colunas 3D, as partículas e a névoa ficam escondidas (`display: none`). Quase não apareciam atrás dos cards e travavam a rolagem. O card que passa pelo meio da tela ganha a borda verde-petróleo.
 
 Cada pilar mostra os grupos que tiver: "Benefícios" e, só na Automação, "Ferramentas". Testes funcionais não tem grupos; tem o botão "Conhecer mais", que abre a aba Testes do Método e rola até "Cada risco pede um tipo de teste" (`irParaMetodo`).
 

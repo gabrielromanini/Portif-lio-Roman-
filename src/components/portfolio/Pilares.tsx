@@ -261,8 +261,8 @@ function ligarParticulas(canvas: HTMLCanvasElement, secao: HTMLElement, parado: 
  * - Passa sozinho; hover num item mostra aquele pilar (pausa) e clique fixa nele.
  * - A coluna do pilar acende lá atrás, com o número dela por cima; a câmera gira de
  *   leve na direção dela e "respira" devagar enquanto a seção está na tela.
- * - Celular: os 7 pilares em cards (cascata); as colunas ficam presas ao fundo,
- *   apagadas, e o card no meio da tela acende a coluna dele.
+ * - Celular: os 7 pilares em cards (cascata), sem o fundo animado; o card no meio
+ *   da tela ganha a borda verde-petróleo.
  * - Movimento reduzido: sem passar sozinho nem animar. Sem JS: os 7 em lista.
  */
 export function PilaresSection() {
@@ -354,9 +354,11 @@ export function PilaresSection() {
     const palco = secao.querySelector<HTMLElement>(".pc-palco")!;
     const marca = secao.querySelector<HTMLElement>(".pc-marca")!;
     const ancoras = Array.from(secao.querySelectorAll<HTMLElement>("[data-ancora]"));
+    // No celular o número (e todo o fundo) fica escondido
+    const celular = window.matchMedia("(max-width: 767.98px)");
     let visivel = false;
     const posicionar = () => {
-      if (!visivel || getComputedStyle(marca).display === "none") return;
+      if (!visivel || celular.matches) return;
       const caixa = palco.getBoundingClientRect();
       const r = ancoras[ativoRef.current].getBoundingClientRect();
       marca.style.transform = `translate3d(${(r.left - caixa.left - marca.offsetWidth / 2).toFixed(1)}px, ${(r.top - caixa.top - marca.offsetHeight).toFixed(1)}px, 0)`;
@@ -406,7 +408,7 @@ export function PilaresSection() {
       style={{ "--ativo": ativo } as CSSProperties}
     >
       <div className="pc-palco">
-        {/* Fundo: cena, névoa e partículas. No celular fica preso atrás dos cards */}
+        {/* Fundo: cena, névoa e partículas. Some no celular */}
         <div className="pc-fundo">
           <div className="pc-fundo-preso">
             <canvas aria-hidden className="pc-particulas" />

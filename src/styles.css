@@ -1361,41 +1361,17 @@
   }
 }
 
-/* ——— Celular: os 7 pilares em cards (cascata), com as colunas presas ao fundo,
-   apagadas, acompanhando o card do meio da tela ——— */
+/* ——— Celular: os 7 pilares em cards (cascata), sem o fundo animado ——— */
 @media (max-width: 767.98px) {
-  .pc {
-    --H: min(calc(100svh * 0.34), 56vw);
-  }
   .pc-palco {
     height: auto;
     min-height: 0;
-    /* clip (e não hidden), para o fundo preso (sticky) continuar funcionando */
     overflow: clip;
     padding: 2.5rem 1rem 3rem;
   }
-  .pc-fundo-preso {
-    position: sticky;
-    top: 54px;
-    bottom: auto;
-    height: calc(100svh - 54px);
-    overflow: hidden;
-    opacity: 0.55;
-  }
-  .pc-cena {
-    perspective-origin: 50% 45%;
-  }
-  .pc-camera {
-    left: 50%;
-    top: 72%;
-  }
-  .pc-chao {
-    background: radial-gradient(
-      ellipse 60% 18% at 50% 74%,
-      rgba(0, 210, 190, 0.12),
-      transparent 80%
-    );
-  }
+  /* Colunas 3D, partículas e névoa saem: quase não apareciam atrás dos cards e
+     travavam a rolagem. Com display: none as partículas também param de desenhar. */
+  .pc-fundo,
   .pc-marca,
   .pc-nav {
     display: none;
@@ -1429,9 +1405,9 @@
     padding: 22px 20px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(8, 12, 13, 0.72);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    /* Sem backdrop-filter: com o fundo preso e animado atrás, os 7 desfoques eram
+       refeitos a cada quadro da rolagem e travavam o scroll no celular */
+    background: rgba(8, 12, 13, 0.84);
     text-shadow: none;
     transition: border-color 0.4s ease;
   }
